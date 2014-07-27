@@ -1,0 +1,30 @@
+README
+
+To compile:
+    gcc -Wall *.c -rdynamic -ldl -lpthread -o ircbotd
+
+Any modules must be placed in the "./modules" subdirectory.
+Logs are stored in the "./logs" subdirectory
+Default configuration file is ./ircbotd.conf; a custom one may be set
+through flags:
+
+ircbotd -c conffile
+
+To make custom modules:
+
+- Include at least circle.h
+- Implement the following prototype, or else the module will not be loaded:
+            void evaluate(IRCMSG * ircmsg);
+        Take a look at circle.h to see what is in the custom data types.
+- Please use the following prototype for writing output to the stream:
+            void ircmsg->irc->respond(ircmsg->irc, const char * format, ...);
+        this allows for proper signaling to the parent thread to send/flush the stream;
+        format is the string format, similar to the printf family of functions
+- To compile:
+        gcc -Wall -fPIC -shared *.c -o libcustommod.so
+- Placing this in the "./modules" directory on ircbotd startup will cause it to be automatically
+        loaded; placed anywhere else, you can still load it while ircbotd is running by sending
+            !module load libcustommod.so
+        for example.
+
+Note: be warned that creating your own modules increases the risk that your bot	may segfault.
