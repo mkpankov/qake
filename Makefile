@@ -8,7 +8,10 @@ BUILD_DEBUG := n
 # 2 - command
 # 3 - where to write command to
 define RUN
-@echo $1; if ! $2; then echo '[ERROR] Failed command:\n$2'; fi
+$(call FUNCTION_DEBUG_HEADER,$0)
+$(call FUNCTION_DEBUG,DESCRIPTION,$1)
+$(call FUNCTION_DEBUG,COMMAND,$2)
+@echo $(DESCRIPTION); if ! $(COMMAND); then echo '[ERROR] Failed command:\n$(COMMAND)'; fi
 endef
 
 # 1 - function name
@@ -22,7 +25,12 @@ endif
 # 2 - parameter value
 ifeq ($(BUILD_DEBUG),y)
 define FUNCTION_DEBUG
+$(eval $1 = $2)
 $(info --$1: $2)
+endef
+else
+define FUNCTION_DEBUG
+$(eval $1 = $2)
 endef
 endif
 
@@ -61,7 +69,7 @@ $(call TRACE1,OBJ_$2 := $(patsubst $(SRC_DIR)/$1%,$(BUILD_DIR)/$2/%.o,$3))
 $(OBJ_$2): $(BUILD_DIR)/$2/%.o: \
   $(SRC_DIR)/$1/% \
 | $$(DIRECTORY)
-	$(call RUN,GCC $$(@F),gcc $$< -o $$@ $4 -c -MD -MF $$@.d -MP)
+	$$(call RUN,GCC $$(@F),gcc $$< -o $$@ $4 -c -MD -MF $$@.d -MP)
 
 $(call TRACE1,DEP_$2 := $$(OBJ_$2:=.d))
 
@@ -70,7 +78,7 @@ $(call TRACE1,DEP_$2 := $$(OBJ_$2:=.d))
 PROGRAM_$2 := $(BUILD_DIR)/$2/$2
 
 $$(PROGRAM_$2): $(OBJ_$2)
-	$(call RUN,GCC $$(@F),gcc $$^ -o $$@ $5)
+	$$(call RUN,GCC $$(@F),gcc $$^ -o $$@ $5)
 
 ALL += $$(PROGRAM_$2)
 endef
