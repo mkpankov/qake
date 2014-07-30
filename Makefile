@@ -91,6 +91,10 @@ define RLV
 $(call REFERENCE_LOCAL_VARIABLE,$1,$2)
 endef
 
+define &
+$(call RLV,$1,$2)
+endef
+
 # Function: Print a value as it's being evaluated.
 define TRACE1
 $(call PRINT1,$1)
@@ -152,8 +156,8 @@ $(call FUNCTION_DEBUG_HEADER,$0)
 $(call DEFINE_LOCAL_VARIABLE,$0,DESCRIPTION,$1)
 $(call DEFINE_LOCAL_VARIABLE,$0,COMMAND,$2)
 )
-@echo $(call RLV,$0,DESCRIPTION); if ! $(call RLV,$0,COMMAND);\
-  then echo '[ERROR] Failed command:\n$(call RLV,$0,COMMAND)'; fi
+@echo $(call &,$0,DESCRIPTION); if ! $(call &,$0,COMMAND);\
+  then echo '[ERROR] Failed command:\n$(call &,$0,COMMAND)'; fi
 endef
 
 # Function: Define build of a program.
@@ -166,33 +170,33 @@ $(call DEFINE_LOCAL_VARIABLE,$0,CFLAGS,$4)
 $(call DEFINE_LOCAL_VARIABLE,$0,LDFLAGS,$5)
 $(call DEFINE_LOCAL_VARIABLE,$0,LDLIBS,$6)
 
-$(call TRACE1,OBJ_$(call RLV,$0,BUILT_NAME) := $(strip \
-  $(patsubst $(SRC_DIR)/$(call RLV,$0,SOURCE_NAME)%,\
-             $(BUILD_DIR)/$(call RLV,$0,BUILT_NAME)/%.o,\
-             $(call RLV,$0,SRC))))
+$(call TRACE1,OBJ_$(call &,$0,BUILT_NAME) := $(strip \
+  $(patsubst $(SRC_DIR)/$(call &,$0,SOURCE_NAME)%,\
+             $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o,\
+             $(call &,$0,SRC))))
 
-$(call TRACE1,$(OBJ_$(call RLV,$0,BUILT_NAME)): \
-  $(BUILD_DIR)/$(call RLV,$0,BUILT_NAME)/%.o: \
-  $(SRC_DIR)/$(call RLV,$0,SRC_NAME)/% \
+$(call TRACE1,$(OBJ_$(call &,$0,BUILT_NAME)): \
+  $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o: \
+  $(SRC_DIR)/$(call &,$0,SRC_NAME)/% \
 | $$(DIRECTORY)
 > $$(COMPILE_OBJECT))
-$(OBJ_$2): CFLAGS := $(call RLV,$0,CFLAGS)
+$(OBJ_$2): CFLAGS := $(call &,$0,CFLAGS)
 
-$(call TRACE1,DEP_$(call RLV,$0,BUILT_NAME) := $(strip \
-  $$(OBJ_$(call RLV,$0,BUILT_NAME):=.d)))
+$(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
+  $$(OBJ_$(call &,$0,BUILT_NAME):=.d)))
 
--include $$(DEP_$(call RLV,$0,BUILT_NAME))
+-include $$(DEP_$(call &,$0,BUILT_NAME))
 
-$(call TRACE1,PROGRAM_$(call RLV,$0,BUILT_NAME) := $(strip \
-  $(BUILD_DIR)/$(call RLV,$0,BUILT_NAME)/$(call RLV,$0,BUILT_NAME)))
+$(call TRACE1,PROGRAM_$(call &,$0,BUILT_NAME) := $(strip \
+  $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/$(call &,$0,BUILT_NAME)))
 
-$$(PROGRAM_$(call RLV,$0,BUILT_NAME)): $(OBJ_$(call RLV,$0,BUILT_NAME))
+$$(PROGRAM_$(call &,$0,BUILT_NAME)): $(OBJ_$(call &,$0,BUILT_NAME))
 > $$(LINK_PROGRAM)
 
-$$(PROGRAM_$(call RLV,$0,BUILT_NAME)): LDFLAGS := $(call RLV,$0,LDFLAGS)
-$$(PROGRAM_$(call RLV,$0,BUILT_NAME)): LDLIBS := $(call RLV,$0,LDLIBS)
+$$(PROGRAM_$(call &,$0,BUILT_NAME)): LDFLAGS := $(call &,$0,LDFLAGS)
+$$(PROGRAM_$(call &,$0,BUILT_NAME)): LDLIBS := $(call &,$0,LDLIBS)
 
-ALL += $$(PROGRAM_$(call RLV,$0,BUILT_NAME))
+ALL += $$(PROGRAM_$(call &,$0,BUILT_NAME))
 endef
 
 define COMPILE_OBJECT
