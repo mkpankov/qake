@@ -5,6 +5,8 @@
 # https://www.gnu.org/software/make/manual/html_node/Special-Variables.html
 .DEFAULT_GOAL := all
 
+MAKEFLAGS := -r -R -j
+
 # Second expansion is used in this solution to seamlessly create
 # directories for target files.
 # Secondary expansion:
