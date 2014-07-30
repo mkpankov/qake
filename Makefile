@@ -5,7 +5,7 @@
 # https://www.gnu.org/software/make/manual/html_node/Special-Variables.html
 .DEFAULT_GOAL := all
 
-MAKEFLAGS := -r -R -j
+MAKEFLAGS := -r -R -j -O
 
 # Second expansion is used in this solution to seamlessly create
 # directories for target files.
@@ -159,7 +159,7 @@ $(call DEFINE_LOCAL_VARIABLE,$0,DESCRIPTION,$1)
 $(call DEFINE_LOCAL_VARIABLE,$0,COMMAND,$2)
 )
 @echo $(call &,$0,DESCRIPTION); if ! $(call &,$0,COMMAND);\
-  then echo '[ERROR] Failed command:\n$(call &,$0,COMMAND)'; fi
+  then echo "$$(tput setaf 1)[ERROR]$$(tput sgr0) Failed command:\n$(call &,$0,COMMAND)"; fi
 endef
 
 # Function: Define build of a program.
