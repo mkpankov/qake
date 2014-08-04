@@ -1,3 +1,33 @@
+# Check version of used Make.
+# $(if) function checks first parameter:
+#   if it expands to non-empty string, $(if) expands to the second parameter.
+#   if it expands to     empty string, $(if) expands to the third  parameter
+#     (if present).
+# More on conditional functions in GNU Make:
+# http://www.gnu.org/software/make/manual/html_node/Conditional-Functions.html#Conditional-Functions
+#
+# $(shell) function executes shell command and expands
+#   to captured standard output.
+# We effectively do make --version.
+# We use $(MAKE) variable to account for different possible commands to launch
+#   Make. It will expand to absolute path to Make,
+#   so it works correctly with $PATH and everything.
+# More about $(MAKE) variable:
+# http://www.gnu.org/software/make/manual/html_node/MAKE-Variable.html#MAKE-Variable
+#
+# So, to branch on result of shell command, we output something in one case
+#   (echo Fail) and nothing in another one.
+# We also have to suppress all other output since otherwise the result of
+#   $(shell) won't be empty even when we didn't explicitly output anything.
+#
+# In case you wonder why I don't write comments in-line:
+#   GNU Make doesn't like that.
+# It might want to cat the comment line to the previous one with backslash, etc.
+$(if $(shell if ! $(MAKE) --version | grep 'GNU Make 4.' > /dev/null; \
+               then echo Fail; \
+             fi;),\
+     $(error Only GNU Make 4+ is supported))
+
 # By default, when target is not specified, Make will build the one
 #   specified first in the Makefile.
 # Confusing, let's disable and make it always build 'all' target.
