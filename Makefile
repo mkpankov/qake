@@ -1,4 +1,6 @@
 # Check version of used Make.
+# Most of the stuff mentioned here can actually be used in at least GNU Make 3.81.
+#
 # $(if) function checks first parameter:
 #   if it expands to non-empty string, $(if) expands to the second parameter.
 #   if it expands to     empty string, $(if) expands to the third  parameter
@@ -72,7 +74,16 @@ MAKEFLAGS := -r -R -j -O
 # https://www.gnu.org/software/make/manual/html_node/Overriding.html
 BUILD_DEBUG := n
 
-.RECIPEPREFIX = >
+# By default, GNU Make uses tab character to determine
+#   which line goes to recipe and which is Makefile syntax.
+# Conventionally, recipe lines start with tab character.
+# This is often source of confusion, as tab is not a printed character (obviously).
+# This is even more so in the land of lousy editors which like
+#   to convert indentation from tabs to spaces and vice versa.
+# With this, an actual printed character is used to introduce recipe line.
+#
+# GNU Make 4.0 required.
+.RECIPEPREFIX := >
 
 # Function: Print header of function call trace.
 # Conditional parts of Makefiles:
@@ -115,16 +126,26 @@ $(info --$(NAME): $(VALUE))
 endef
 endif
 
-ifeq ($(BUILD_DEBUG),y)
-define PRINT1
-$(info $1)
-endef
-endif
-
-# Function: Print value of function parameter.
+# Function: Define a variable 'local' to the function.
+#
+# This is not a real local variable!
+# It will have value it got during last function call later in Makefile.
+# The only reason to do this is to perform name mangling to avoid
+#   variable name conflicts.
+# And, well, more convenient function debugging.
+#
+# $(strip) function removed spaces on both ends of the variable value.
+# This way we don't have to care about spaces added by make
+#   when continuing new lines.
+# More here:
+# https://www.gnu.org/software/make/manual/html_node/Splitting-Lines.html
+#
 # $(call) function performs expansion to the value of function definition,
 #   with $0, $1 and so on in the function definition being replaced
 #   with actual parameters.
+#
+# As you can see, variable names can be calculated via
+#   other variables and functions ($(FUNCTION)_$(NAME)).
 define DEFINE_LOCAL_VARIABLE
 $(eval FUNCTION := $(strip $1))
 $(eval NAME := $(strip $2))
@@ -147,6 +168,12 @@ endef
 define &
 $(call RLV,$1,$2)
 endef
+
+ifeq ($(BUILD_DEBUG),y)
+define PRINT1
+$(info $1)
+endef
+endif
 
 # Function: Print a value as it's being evaluated.
 define TRACE1
