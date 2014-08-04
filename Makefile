@@ -153,6 +153,23 @@ $(eval VALUE := $(strip $3))
 $(call TRACE1,$(FUNCTION)_$(NAME) := $(VALUE))
 endef
 
+# Function: Alias to DEFINE_LOCAL_VARIABLE.
+# We can use any character, except '#', ':', '=' and space
+#   in the name of variable.
+# So, semantics: "move value on the right to the variable on the left"
+# Okay, this is to illustrate our infinite possibilities,
+#   but in the end, let's stick with something more conventional.
+# See below.
+define <<
+$(call DEFINE_LOCAL_VARIABLE,$1,$2,$3)
+endef
+
+# Old-school lisp-ish (or haskell-ish, or whatever) statement.
+# Not really a statement: you still have to use $(call let,...).
+define let
+$(call DEFINE_LOCAL_VARIABLE,$1,$2,$3)
+endef
+
 define REFERENCE_LOCAL_VARIABLE
 $(strip \
 $(eval FUNCTION := $1)
