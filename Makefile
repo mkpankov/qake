@@ -170,6 +170,9 @@ define let
 $(call DEFINE_LOCAL_VARIABLE,$1,$2,$3)
 endef
 
+# Function: Reference a local variable introduced by DEFINE_LOCAL_VARIABLE.
+# We need $(strip) to remove extra spaces produced by newlines and $(eval)
+#   in the definition (result of the $(eval) here is empty).
 define REFERENCE_LOCAL_VARIABLE
 $(strip \
 $(eval FUNCTION := $1)
@@ -178,10 +181,13 @@ $($(FUNCTION)_$(NAME))
 )
 endef
 
+# Couldn't think of something more resembling of variable dereference
+#   and not breaking GNU Make at the same time ('*' does break it).
 define &
 $(call REFERENCE_LOCAL_VARIABLE,$1,$2)
 endef
 
+# Function: Print a single passed parameter to stdout if debugging is enabled.
 ifeq ($(BUILD_DEBUG),y)
 define PRINT1
 $(info $1)
@@ -208,7 +214,7 @@ $$(@D)/.directory.marker
 endef
 
 # Implicit rule for all marker files.
-# % is called stem of pattern rule.
+# % is called a stem of pattern rule.
 # It matches the part of file path of target.
 # I.e. if target is a/b/c/.directory.marker,
 #   % will match a/b/c/.
@@ -246,8 +252,8 @@ SRC_DIR := src
 define RUN
 $(strip \
 $(call FUNCTION_DEBUG_HEADER,$0)
-$(call DEFINE_LOCAL_VARIABLE,$0,DESCRIPTION,$1)
-$(call DEFINE_LOCAL_VARIABLE,$0,COMMAND,$2)
+$(call let,$0,DESCRIPTION,$1)
+$(call let,$0,COMMAND,$2)
 )
 @echo $(call &,$0,DESCRIPTION); if ! $(call &,$0,COMMAND);\
   then echo "$$(tput setaf 1)[ERROR]$$(tput sgr0) Failed command:\n$(call &,$0,COMMAND)"; fi
@@ -256,12 +262,12 @@ endef
 # Function: Define build of a program.
 define PROGRAM
 $(call FUNCTION_DEBUG_HEADER,$0)
-$(call DEFINE_LOCAL_VARIABLE,$0,SOURCE_NAME,$1)
-$(call DEFINE_LOCAL_VARIABLE,$0,BUILT_NAME,$2)
-$(call DEFINE_LOCAL_VARIABLE,$0,SRC,$3)
-$(call DEFINE_LOCAL_VARIABLE,$0,CFLAGS,$4)
-$(call DEFINE_LOCAL_VARIABLE,$0,LDFLAGS,$5)
-$(call DEFINE_LOCAL_VARIABLE,$0,LDLIBS,$6)
+$(call let,$0,SOURCE_NAME,$1)
+$(call let,$0,BUILT_NAME,$2)
+$(call let,$0,SRC,$3)
+$(call let,$0,CFLAGS,$4)
+$(call let,$0,LDFLAGS,$5)
+$(call let,$0,LDLIBS,$6)
 
 $(call TRACE1,OBJ_$(call &,$0,BUILT_NAME) := $(strip \
   $(patsubst $(SRC_DIR)/$(call &,$0,SOURCE_NAME)%,\
