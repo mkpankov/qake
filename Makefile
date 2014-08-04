@@ -178,12 +178,8 @@ $($(FUNCTION)_$(NAME))
 )
 endef
 
-define RLV
-$(call REFERENCE_LOCAL_VARIABLE,$1,$2)
-endef
-
 define &
-$(call RLV,$1,$2)
+$(call REFERENCE_LOCAL_VARIABLE,$1,$2)
 endef
 
 ifeq ($(BUILD_DEBUG),y)
