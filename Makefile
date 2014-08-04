@@ -246,9 +246,13 @@ SRC_DIR := src
 
 # Function: Wrap a command.
 # Print short description, output command only if it failed.
-# Last line is the shell command that will be invoked when making some target
+# Last lines is the shell command that will be invoked when making some target
 #   that uses RUN in the recipe.
-# '@' in front of it is to disable echoing of the command itself.
+# If the command wasn't successful, we use tput to colorize part of the output.
+# Double dollars are to prevent treatment as Make variable -
+#   one dollar will get eaten by expansion, second will be left and
+#   actually passed to the shell.
+# '@' in front of the recipe is to disable echoing of the command itself.
 define RUN
 $(strip \
 $(call FUNCTION_DEBUG_HEADER,$0)
