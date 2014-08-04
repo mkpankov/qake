@@ -31,10 +31,31 @@ $(if $(shell if ! $(MAKE) --version | grep 'GNU Make 4.' > /dev/null; \
 # By default, when target is not specified, Make will build the one
 #   specified first in the Makefile.
 # Confusing, let's disable and make it always build 'all' target.
-# Special variables:
+# More about special variables:
 # https://www.gnu.org/software/make/manual/html_node/Special-Variables.html
 .DEFAULT_GOAL := all
 
+# This is roughly equivalent to passing these flags on command line.
+#
+# -r removes built-in implicit rules (like %.o: %c ...).
+# This is to ease debugging and improve performance.
+# Make won't try every possible rule for every prerequisite anymore.
+#
+# -R removes built-in variables (like CC).
+# Just to get rid of another source of confusion and make everything explicit.
+#
+# -j makes build parallel by default.
+# Helps to discover underspecified dependencies and speeds up things.
+#
+# -O enables synchronization of output during parallel build.
+# It is done on per-target basis: all commands of one target
+#   are grouped together.
+#
+# How to override these flags:
+# make MAKEFLAGS=-j
+# will specify only '-j'. You can also pass empty string.
+# More about overriding any Make variable on the command line:
+# https://www.gnu.org/software/make/manual/html_node/Overriding.html#Overriding
 MAKEFLAGS := -r -R -j -O
 
 # Second expansion is used in this solution to seamlessly create
