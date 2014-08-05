@@ -1,4 +1,4 @@
-include prologue.mk
+include $(BREAK_INCLUDE_DIR)/prologue.mk
 
 # Get list of C sources in 'src' directory.
 # More on how $(wildcard) works:
@@ -21,4 +21,4 @@ $(eval $(call PROGRAM,\
               $(LDLIBS_CIRCLE),\
 ))
 
-include epilogue.mk
+include $(BREAK_INCLUDE_DIR)/epilogue.mk
