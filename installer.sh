@@ -96,7 +96,8 @@ maybe_install_alias() {
                 ;;
         esac
         try echo alias break="$BREAK_INSTALL_DIR/break" >> $SHRC
-        try $SHELL -c "source $SHRC"
+
+        info "Please do 'source $SHRC' to finish installation."
     fi
 }
 
