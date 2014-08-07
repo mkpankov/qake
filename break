@@ -1,0 +1,29 @@
+#/bin/sh
+set -e
+
+parse_arguments() {
+    while [ $# -gt 0 ]
+    do
+        case $1 in
+            -f | --file)
+                MAKEFILE=$2
+                shift 2
+                ;;
+            *)
+                shift 1
+                ;;
+        esac
+    done
+
+    [ -z "$MAKEFILE" ] && MAKEFILE='Makefile'
+    MAKEFILE_BRK=$MAKEFILE.brk
+}
+
+parse_arguments $*
+
+echo 'include $(BREAK_INCLUDE_DIR)/prologue.mk' >  $MAKEFILE_BRK
+cat $MAKEFILE >> $MAKEFILE_BRK
+echo 'include $(BREAK_INCLUDE_DIR)/epilogue.mk' >> $MAKEFILE_BRK
+
+/usr/bin/env make -f $MAKEFILE_BRK "$@"
+rm $MAKEFILE_BRK

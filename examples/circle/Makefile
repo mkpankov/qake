@@ -1,5 +1,3 @@
-include $(BREAK_INCLUDE_DIR)/prologue.mk
-
 # Get list of C sources in 'src' directory.
 # More on how $(wildcard) works:
 # https://www.gnu.org/software/make/manual/html_node/Wildcard-Function.html#Wildcard-Function
@@ -20,5 +18,3 @@ $(eval $(call PROGRAM,\
               $(LDFLAGS_CIRCLE),\
               $(LDLIBS_CIRCLE),\
 ))
-
-include $(BREAK_INCLUDE_DIR)/epilogue.mk
