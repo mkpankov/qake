@@ -1,5 +1,4 @@
 #/bin/sh
-set -e
 
 parse_arguments() {
     while [ $# -gt 0 ]
@@ -15,19 +14,22 @@ parse_arguments() {
         esac
     done
 
-    [ -z "$MAKEFILE" ] && MAKEFILE_BRK=$MAKEFILE.brk
+    [ -z "$MAKEFILE" ] && MAKEFILE=Makefile
+    MAKEFILE_BRK=$MAKEFILE.brk
 }
 
 parse_arguments $*
 
-if [ -n "$MAKEFILE" ]
+echo 'include $(BREAK_INCLUDE_DIR)/prologue.mk' >  $MAKEFILE_BRK
+echo "include $MAKEFILE"                        >> $MAKEFILE_BRK
+echo 'include $(BREAK_INCLUDE_DIR)/epilogue.mk' >> $MAKEFILE_BRK
+
+if [ -f .make_path ]
 then
-    exit 1
-    echo 'include $(BREAK_INCLUDE_DIR)/prologue.mk' >  $MAKEFILE_BRK
-    cat $MAKEFILE >> $MAKEFILE_BRK
-    echo 'include $(BREAK_INCLUDE_DIR)/epilogue.mk' >> $MAKEFILE_BRK
-    /usr/bin/env make -f $MAKEFILE_BRK "$@"
-    rm $MAKEFILE_BRK
+    readonly MAKE=$(cat .make_path)
 else
-    /usr/bin/env make "$@"
+    readonly MAKE='/usr/bin/env make'
 fi
+eval $MAKE -f $MAKEFILE_BRK "$@"
+
+rm $MAKEFILE_BRK

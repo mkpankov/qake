@@ -17,8 +17,8 @@ parse_arguments() {
                 usage
                 exit 0
                 ;;
-            -na | --no-alias)
-                INSTALL_ALIAS=false
+            -ne | --no-env)
+                INSTALL_ENV=false
                 shift 1
                 ;;
             -nc | --no-color)
@@ -27,6 +27,10 @@ parse_arguments() {
                 ;;
             -nC | --no-cloning)
                 DO_CLONE=false
+                shift 1
+                ;;
+            -nm | --no-make)
+                INSTALL_MAKE=false
                 shift 1
                 ;;
             -s | --source)
@@ -41,10 +45,12 @@ parse_arguments() {
     done
 
     [ -z "$DO_CLONE" ] && DO_CLONE=true
-    [ -z "$INSTALL_ALIAS" ] && INSTALL_ALIAS=true
+    [ -z "$INSTALL_ENV" ] && INSTALL_ENV=true
     [ -z "$BREAK_URL" ] && BREAK_URL="git@github.com:constantius9/break.git"
     [ -z "$BREAK_INSTALL_DIR" ] && BREAK_INSTALL_DIR="$HOME/break/"
     [ -z "$USE_COLORS" ] && USE_COLORS=true
+    [ -z "$INSTALL_MAKE" ] && INSTALL_MAKE=true
+
 }
 
 info() {
@@ -80,8 +86,30 @@ maybe_clone() {
     fi
 }
 
-maybe_install_alias() {
-    if $INSTALL_ALIAS
+maybe_install_make() {
+    if $INSTALL_MAKE
+    then
+        readonly MAKE_FILENAME=make-4.0.tar.bz2
+        readonly BREAK_MAKE_INSTALL_DIR="$BREAK_INSTALL_DIR/make-4.0/install"
+        readonly MAKE="$BREAK_MAKE_INSTALL_DIR"/bin/make
+        info "Downloading Make 4.0 to $BREAK_INSTALL_DIR/$MAKE_FILENAME"
+        wget http://ftp.gnu.org/gnu/make/$MAKE_FILENAME \
+            -O $BREAK_INSTALL_DIR/$MAKE_FILENAME
+        tar -C $BREAK_INSTALL_DIR -xaf $MAKE_FILENAME
+        cd make-4.0
+        info "Configuring Make 4.0"
+        try ./configure --prefix="$BREAK_MAKE_INSTALL_DIR" > /dev/null
+        info "Building Make 4.0"
+        try make -j > /dev/null
+        info "Installing Make 4.0 to $BREAK_MAKE_INSTALL_DIR"
+        try make install -j > /dev/null
+        cd - > /dev/null
+        echo "$MAKE" > .make_path
+    fi
+}
+
+maybe_install_env() {
+    if $INSTALL_ENV
     then
         case $(basename $SHELL) in
             "zsh")
@@ -95,14 +123,18 @@ maybe_install_alias() {
                 return
                 ;;
         esac
-        try echo alias break="$BREAK_INSTALL_DIR/break" >> $SHRC
+        try echo alias break="$BREAK_INSTALL_DIR/break"        >> $SHRC
+        try echo export BREAK_INCLUDE_DIR="$BREAK_INSTALL_DIR" >> $SHRC
 
         info "Please do 'source $SHRC' to finish installation."
     fi
 }
 
 parse_arguments $*
+
+[ ! -d $BREAK_INSTALL_DIR ] && mkdir -p $BREAK_INSTALL_DIR
 maybe_clone
-maybe_install_alias
+maybe_install_make
+maybe_install_env
 
 congrats "Break is successfully installed and is ready to work!"
