@@ -1,23 +1,22 @@
 # break
 
-GNU Make based build system with a different approach
+GNU Make based build system with a different approach.
 
-# Installation
+## Why?
 
-## Automated
+GNU Make is an old dependency tracking program. Over the years, it gained a lot of features that are hard to use in a maintainable way. Such as, [built-in implicit rules](https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html). It also improved in several areas, but these improvements are still optional to be compatible with older Makefiles.
 
-You can install **Break** via the command line with either `curl` or
-`wget`. Naturally `git` is also required.
+Let's *break* backwards compatibility. Let's squeeze every drop of goodness GNU Make has to offer. Let's make a build system that is easier to use and is more featureful.
 
-### Via Curl
+## Installation
 
-If you're using `curl` type the following command:
+### Automated
 
-```bash
-curl -L https://github.com/constantius9/break/raw/master/installer.sh | sh
-```
+You can install **break** via the command line with `wget`. `git` is also required.
 
-### Via Wget
+GNU Make 4.0 will be downloaded, built and installed during to the installation.
+
+#### Via Wget
 
 If you're using `wget` type:
 
