@@ -58,13 +58,15 @@ $(if $(shell if ! $(MAKE) --version | grep 'GNU Make 4.' > /dev/null; \
 # will specify only '-j'. You can also pass empty string.
 # More about overriding any Make variable on the command line:
 # https://www.gnu.org/software/make/manual/html_node/Overriding.html#Overriding
-MAKEFLAGS := -r -R -j -O
+MAKEFLAGS := -r -R -j -O -s
 
 # Second expansion is used in this solution to seamlessly create
 # directories for target files.
 # Secondary expansion:
 # https://www.gnu.org/software/make/manual/html_node/Secondary-Expansion.html
 .SECONDEXPANSION:
+
+.ONESHELL:
 
 # We'll introduce some convenience wrappers to ease debugging of
 #   our new features. They'll be enabled or disabled by this switch.
