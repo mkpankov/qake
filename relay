@@ -1,0 +1,105 @@
+info() {
+    echo "$@" >&2
+}
+
+while [ $# -gt 0 ]
+do
+    case $1 in
+        --command-file)
+            CMD=$2
+            shift 2
+            ;;
+        --target)
+            TARGET=$2
+            shift 2
+            ;;
+        --prerequisites)
+            shift 1
+            while [ $# -gt 0 ]
+            do
+                case $1 in
+                    --)
+                        shift 1
+                        break
+                        ;;
+                    *)
+                        PREREQS="$PREREQS$1"
+                        shift 1
+                        ;;
+                esac
+            done
+            ;;
+        --phony)
+            shift 1
+            PHONY=True
+            ;;
+        *)
+            break
+            ;;
+    esac
+done
+info Making "$TARGET" with command "$@", with updated prereqs "$PREREQS",\
+ putting command into "$CMD_FILE"
+
+if [ $PHONY = 'True' ]
+then
+    info We\'re building phony target
+fi
+
+if [ $PHONY != 'True' ]
+then
+    info Determining if prerequisites are really out of date
+
+    NEEDS_UPDATE=False
+    for p in $PREREQS
+    do
+        if [ -f $p.hash ]
+        then
+            if ! shasum -s -c $p.hash
+            then
+                NEEDS_UPDATE=True
+                info "$p" is out of date
+                break
+            fi
+        else
+            info Hash of "$p" doesn\'t exist
+            NEEDS_UPDATE=True
+            break
+        fi
+    done
+
+    if [ $NEEDS_UPDATE = 'False' ]
+    then
+        info Nothing needs to be updated, exiting
+        exit 0
+    fi
+fi
+
+for p in $PREREQS
+do
+    info -n Calculating hash for prerequisite "$p" ...
+    shasum -p $p > $p.hash
+    info Saved to "$p".hash
+done
+
+if [ ! -z $CMD_FILE ]
+then
+echo "$@" > $CMD_FILE
+fi
+
+MODIFIER=$(echo "$@" | head -c 2 | tail -c 1)
+info Length: ${#MODIFIER}
+info Modifier: "$MODIFIER"
+if [ $MODIFIER = '@' ]
+then
+    info Stripping modifier
+    CMD=$(echo "$@")
+    info Resulting CMD: "$CMD"
+    REDIRECT='>/dev/null 2>&1'
+else
+    CMD="$@"
+fi
+
+set -e
+eval $CMD $REDIRECT
+set +e

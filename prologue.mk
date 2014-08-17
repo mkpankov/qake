@@ -1,3 +1,7 @@
+SHELL := relay
+
+.SHELLFLAGS := --phony
+
 # Check version of used Make.
 # Most of the stuff mentioned here can actually be used in at least GNU Make 3.81.
 #
@@ -317,6 +321,8 @@ $(call TRACE1,$(OBJ_$(call &,$0,BUILT_NAME)): \
 | $$(DIRECTORY)
 > $$(COMPILE_OBJECT))
 $(OBJ_$(call &,$0,BUILT_NAME)): CFLAGS := $(call &,$0,CFLAGS)
+$(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS := \
+  --target $@ --command-file $@.cmd --prerequisites $?
 
 $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
   $$(OBJ_$(call &,$0,BUILT_NAME):=.d)))
@@ -331,6 +337,8 @@ $$(PROGRAM_$(call &,$0,BUILT_NAME)): $(OBJ_$(call &,$0,BUILT_NAME))
 
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): LDFLAGS := $(call &,$0,LDFLAGS)
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): LDLIBS := $(call &,$0,LDLIBS)
+$$(PROGRAM_$(call &,$0,BUILT_NAME)): .SHELLFLAGS := \
+  --target $@ --command-file $@.cmd --prerequisites $?
 
 ALL += $$(PROGRAM_$(call &,$0,BUILT_NAME))
 endef
