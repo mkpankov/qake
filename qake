@@ -20,9 +20,9 @@ parse_arguments() {
 
 parse_arguments $*
 
-echo 'include $(BREAK_INCLUDE_DIR)/prologue.mk' >  $MAKEFILE_BRK
-echo "include $MAKEFILE"                        >> $MAKEFILE_BRK
-echo 'include $(BREAK_INCLUDE_DIR)/epilogue.mk' >> $MAKEFILE_BRK
+echo 'include $(QAKE_INCLUDE_DIR)/prologue.mk' >  $MAKEFILE_BRK
+echo "include $MAKEFILE"                       >> $MAKEFILE_BRK
+echo 'include $(QAKE_INCLUDE_DIR)/epilogue.mk' >> $MAKEFILE_BRK
 
 if [ -f .make_path ]
 then

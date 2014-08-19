@@ -1,4 +1,4 @@
-# break
+# qake
 
 GNU Make based build system with a different approach.
 
@@ -12,7 +12,7 @@ Let's *break* backwards compatibility. Let's squeeze every drop of goodness GNU 
 
 ### Automated
 
-You can install **break** via the command line with `wget`. `git` is also required.
+You can install **qake** via the command line with `wget`. `git` is also required.
 
 GNU Make 4.0 will be downloaded, built and installed during to the installation.
 
@@ -21,5 +21,5 @@ GNU Make 4.0 will be downloaded, built and installed during to the installation.
 If you're using `wget` type:
 
 ```bash
-wget --no-check-certificate https://github.com/constantius9/break/raw/master/installer.sh -O - | sh
+wget --no-check-certificate https://github.com/constantius9/qake/raw/master/installer.sh -O - | sh
 ```

@@ -10,7 +10,7 @@ parse_arguments() {
     do
         case $1 in
             -d | --directory)
-                BREAK_INSTALL_DIR=$2
+                QAKE_INSTALL_DIR=$2
                 shift 2
                 ;;
             -h | --help)
@@ -34,7 +34,7 @@ parse_arguments() {
                 shift 1
                 ;;
             -s | --source)
-                BREAK_URL=$2
+                QAKE_URL=$2
                 shift 2
                 ;;
             *)
@@ -46,8 +46,8 @@ parse_arguments() {
 
     [ -z "$DO_CLONE" ] && DO_CLONE=true
     [ -z "$INSTALL_ENV" ] && INSTALL_ENV=true
-    [ -z "$BREAK_URL" ] && BREAK_URL="git@github.com:constantius9/break.git"
-    [ -z "$BREAK_INSTALL_DIR" ] && BREAK_INSTALL_DIR="$HOME/break/"
+    [ -z "$QAKE_URL" ] && QAKE_URL="git@github.com:constantius9/qake.git"
+    [ -z "$QAKE_INSTALL_DIR" ] && QAKE_INSTALL_DIR="$HOME/qake/"
     [ -z "$USE_COLORS" ] && USE_COLORS=true
     [ -z "$INSTALL_MAKE" ] && INSTALL_MAKE=true
 
@@ -81,8 +81,8 @@ try() {
 maybe_clone() {
     if $DO_CLONE
     then
-        info "Cloning $BREAK_URL into $BREAK_INSTALL_DIR"
-        try git clone $BREAK_URL $BREAK_INSTALL_DIR
+        info "Cloning $QAKE_URL into $QAKE_INSTALL_DIR"
+        try git clone $QAKE_URL $QAKE_INSTALL_DIR
     fi
 }
 
@@ -90,18 +90,18 @@ maybe_install_make() {
     if $INSTALL_MAKE
     then
         readonly MAKE_FILENAME=make-4.0.tar.bz2
-        readonly BREAK_MAKE_INSTALL_DIR="$BREAK_INSTALL_DIR/make-4.0/install"
-        readonly MAKE="$BREAK_MAKE_INSTALL_DIR"/bin/make
-        info "Downloading Make 4.0 to $BREAK_INSTALL_DIR/$MAKE_FILENAME"
+        readonly QAKE_MAKE_INSTALL_DIR="$QAKE_INSTALL_DIR/make-4.0/install"
+        readonly MAKE="$QAKE_MAKE_INSTALL_DIR"/bin/make
+        info "Downloading Make 4.0 to $QAKE_INSTALL_DIR/$MAKE_FILENAME"
         wget http://ftp.gnu.org/gnu/make/$MAKE_FILENAME \
-            -O $BREAK_INSTALL_DIR/$MAKE_FILENAME
-        tar -C $BREAK_INSTALL_DIR -xaf $MAKE_FILENAME
+            -O $QAKE_INSTALL_DIR/$MAKE_FILENAME
+        tar -C $QAKE_INSTALL_DIR -xaf $MAKE_FILENAME
         cd make-4.0
         info "Configuring Make 4.0"
-        try ./configure --prefix="$BREAK_MAKE_INSTALL_DIR" > /dev/null
+        try ./configure --prefix="$QAKE_MAKE_INSTALL_DIR" > /dev/null
         info "Building Make 4.0"
         try make -j > /dev/null
-        info "Installing Make 4.0 to $BREAK_MAKE_INSTALL_DIR"
+        info "Installing Make 4.0 to $QAKE_MAKE_INSTALL_DIR"
         try make install -j > /dev/null
         cd - > /dev/null
         echo "$MAKE" > .make_path
@@ -123,8 +123,8 @@ maybe_install_env() {
                 return
                 ;;
         esac
-        try echo alias break="$BREAK_INSTALL_DIR/break"        >> $SHRC
-        try echo export BREAK_INCLUDE_DIR="$BREAK_INSTALL_DIR" >> $SHRC
+        try echo alias qake="$QAKE_INSTALL_DIR/qake"         >> $SHRC
+        try echo export QAKE_INCLUDE_DIR="$QAKE_INSTALL_DIR" >> $SHRC
 
         info "Please do 'source $SHRC' to finish installation."
     fi
@@ -132,9 +132,9 @@ maybe_install_env() {
 
 parse_arguments $*
 
-[ ! -d $BREAK_INSTALL_DIR ] && mkdir -p $BREAK_INSTALL_DIR
+[ ! -d $QAKE_INSTALL_DIR ] && mkdir -p $QAKE_INSTALL_DIR
 maybe_clone
 maybe_install_make
 maybe_install_env
 
-congrats "Break is successfully installed and is ready to work!"
+congrats "Qake is successfully installed and is ready to work!"
