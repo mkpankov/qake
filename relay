@@ -59,9 +59,9 @@ then
     NEEDS_UPDATE=False
     for p in $PREREQS
     do
-        if [ -f $p.hash ]
+        if [ -f "$p".hash ]
         then
-            if ! shasum -s -c $p.hash
+            if ! shasum -s -c "$p".hash
             then
                 NEEDS_UPDATE=True
                 info "$p" is out of date
@@ -84,7 +84,7 @@ fi
 for p in $PREREQS
 do
     info -n Calculating hash for prerequisite "$p" ...
-    shasum -p $p > $p.hash
+    shasum -p "$p" > "$p".hash
     info Saved to "$p".hash
 done
 
