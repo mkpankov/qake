@@ -11,6 +11,10 @@ info
 while [ $# -gt 0 ]
 do
     case $1 in
+        --build-dir)
+            BUILD_DIR=$2
+            shift 2
+            ;;
         --command-file)
             CMD_FILE=$2
             shift 2
@@ -45,7 +49,7 @@ do
     esac
 done
 info Making "$TARGET" with command "$@", with updated prereqs "$PREREQS",\
- putting command into "$CMD_FILE"
+ putting command into "$CMD_FILE", build dir is "$BUILD_DIR"
 
 if [ "$PHONY" = "True" ]
 then
@@ -59,9 +63,10 @@ then
     NEEDS_UPDATE=False
     for p in $PREREQS
     do
-        if [ -f "$p".hash ]
+        HASH_FILE="$BUILD_DIR/$p.hash"
+        if [ -f "$HASH_FILE" ]
         then
-            if ! shasum -s -c "$p".hash
+            if ! shasum -s -c "$HASH_FILE"
             then
                 NEEDS_UPDATE=True
                 info "$p" is out of date
@@ -83,9 +88,11 @@ fi
 
 for p in $PREREQS
 do
+    HASH_FILE="$BUILD_DIR/$p.hash"
     info -n Calculating hash for prerequisite "$p" ...
-    shasum -p "$p" > "$p".hash
-    info Saved to "$p".hash
+    mkdir -p $(dirname "$HASH_FILE")
+    shasum -p "$p" > "$HASH_FILE"
+    info Saved to "$HASH_FILE"
 done
 
 CMD="$@"

@@ -325,7 +325,8 @@ $(call TRACE1,$(OBJ_$(call &,$0,BUILT_NAME)): \
 > $$(COMPILE_OBJECT))
 $(OBJ_$(call &,$0,BUILT_NAME)): CFLAGS := $(call &,$0,CFLAGS)
 $(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
-  --target $$@ --command-file $$@.cmd --prerequisites $$? --
+  --target $$@ --command-file $$@.cmd --prerequisites $$? -- \
+  --build-dir $(BUILD_DIR)
 
 $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
   $$(OBJ_$(call &,$0,BUILT_NAME):=.d)))
@@ -341,7 +342,8 @@ $$(PROGRAM_$(call &,$0,BUILT_NAME)): $(OBJ_$(call &,$0,BUILT_NAME))
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): LDFLAGS := $(call &,$0,LDFLAGS)
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): LDLIBS := $(call &,$0,LDLIBS)
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
-  --target $$@ --command-file $$@.cmd --prerequisites $$? --
+  --target $$@ --command-file $$@.cmd --prerequisites $$? -- \
+  --build-dir $(BUILD_DIR)
 
 ALL += $$(PROGRAM_$(call &,$0,BUILT_NAME))
 endef
