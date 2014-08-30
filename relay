@@ -5,11 +5,14 @@ info() {
     fi
 }
 
+info
+info
+
 while [ $# -gt 0 ]
 do
     case $1 in
         --command-file)
-            CMD=$2
+            CMD_FILE=$2
             shift 2
             ;;
         --target)
@@ -26,7 +29,7 @@ do
                         break
                         ;;
                     *)
-                        PREREQS="$PREREQS$1"
+                        PREREQS="$PREREQS $1"
                         shift 1
                         ;;
                 esac
@@ -90,16 +93,9 @@ then
 echo "$@" > $CMD_FILE
 fi
 
-MODIFIER=$(echo "$@" | head -c 2 | tail -c 1)
-if [ $MODIFIER = '@' ]
-then
-    CMD=$(echo "$@" | tail -c $(expr ${#@} - 2))
-    REDIRECT='>/dev/null 2>&1'
-else
-    CMD="$@"
-fi
+CMD="$@"
 info Resulting CMD: "$CMD"
 
 set -e
-eval $CMD $REDIRECT
+eval "$CMD" $REDIRECT
 set +e

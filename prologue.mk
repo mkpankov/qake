@@ -1,4 +1,4 @@
-SHELL := relay
+SHELL := $(QAKE_INCLUDE_DIR)/relay
 
 .SHELLFLAGS := --phony
 
@@ -237,7 +237,7 @@ endef
 #   due to changes in processing of paths with double slashes.
 %/.directory.marker:
 > $(call RUN,MKDIR $(@D),mkdir -p $(@D))
-> @touch $@
+> touch $@
 
 %/.directory.marker: .SHELLFLAGS = \
   --target $@ --command-file $@.cmd --prerequisites $? --
@@ -268,7 +268,7 @@ $(call FUNCTION_DEBUG_HEADER,$0)
 $(call let,$0,DESCRIPTION,$1)
 $(call let,$0,COMMAND,$2)
 )
-@echo $(call &,$0,DESCRIPTION); if ! $(call &,$0,COMMAND);\
+echo $(call &,$0,DESCRIPTION); if ! $(call &,$0,COMMAND);\
   then echo "$$(tput setaf 1)[ERROR]$$(tput sgr0) Failed command:\n$(call &,$0,COMMAND)"; fi
 endef
 
@@ -324,8 +324,8 @@ $(call TRACE1,$(OBJ_$(call &,$0,BUILT_NAME)): \
 | $$(DIRECTORY)
 > $$(COMPILE_OBJECT))
 $(OBJ_$(call &,$0,BUILT_NAME)): CFLAGS := $(call &,$0,CFLAGS)
-$(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS := \
-  --target $@ --command-file $@.cmd --prerequisites $? --
+$(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
+  --target $$@ --command-file $$@.cmd --prerequisites $$? --
 
 $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
   $$(OBJ_$(call &,$0,BUILT_NAME):=.d)))
@@ -340,8 +340,8 @@ $$(PROGRAM_$(call &,$0,BUILT_NAME)): $(OBJ_$(call &,$0,BUILT_NAME))
 
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): LDFLAGS := $(call &,$0,LDFLAGS)
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): LDLIBS := $(call &,$0,LDLIBS)
-$$(PROGRAM_$(call &,$0,BUILT_NAME)): .SHELLFLAGS := \
-  --target $@ --command-file $@.cmd --prerequisites $? --
+$$(PROGRAM_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
+  --target $$@ --command-file $$@.cmd --prerequisites $$? --
 
 ALL += $$(PROGRAM_$(call &,$0,BUILT_NAME))
 endef
