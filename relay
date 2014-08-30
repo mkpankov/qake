@@ -88,12 +88,12 @@ do
     info Saved to "$p".hash
 done
 
+CMD="$@"
 if [ ! -z $CMD_FILE ]
 then
-echo "$@" > $CMD_FILE
+    echo "$CMD" > $CMD_FILE
 fi
 
-CMD="$@"
 info Resulting CMD: "$CMD"
 
 set -e
