@@ -328,6 +328,41 @@ $(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
   --target $$@ --command-file $$@.cmd --prerequisites $$? -- \
   --build-dir $(BUILD_DIR)
 
+DO_UPDATE_$(call &,$0,BUILT_NAME) = $$(strip \
+  $$(patsubst $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME)/)%,\
+              $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,BUILT_NAME)/)%.o.do_update, \
+              $$(call &,$0,SRC)))
+
+$$(DO_UPDATE_$(call &,$0,BUILT_NAME)): \
+  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,BUILT_NAME)/)%.o.do_update: \
+  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,BUILT_NAME)/)%.o.hash.new
+>  if [ -f $$(patsubst $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.new,\
+                       $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.old,\
+                       $$<) ];\
+   then \
+     if ! diff -q $$< $$(patsubst $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.new,\
+                                  $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.old,\
+                                  $$<) > /dev/null; \
+     then \
+         touch $$@; \
+     fi; \
+   else \
+     touch $$@; \
+   fi; \
+   cp $$< $$(patsubst $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.new,\
+                      $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.old,\
+                      $$<)
+
+HASH_NEW_$(call &,$0,BUILT_NAME) = $$(strip \
+  $$(patsubst $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME)/)%,\
+              $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,BUILT_NAME)/)%.o.hash.new, \
+              $$(call &,$0,SRC)))
+
+$(HASH_NEW_$(call &,$0,BUILT_NAME)):
+  $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.hash.new: \
+  $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%
+> shasum $$< > $$@
+
 $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
   $$(OBJ_$(call &,$0,BUILT_NAME):=.d)))
 
@@ -336,7 +371,9 @@ $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
 $(call TRACE1,PROGRAM_$(call &,$0,BUILT_NAME) := $(strip \
   $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/$(call &,$0,BUILT_NAME)))
 
-$$(PROGRAM_$(call &,$0,BUILT_NAME)): $(OBJ_$(call &,$0,BUILT_NAME))
+$$(PROGRAM_$(call &,$0,BUILT_NAME)): \
+  $$(DO_UPDATE_$(call &,$0,BUILT_NAME)) \
+| $$(OBJ_$(call &,$0,BUILT_NAME))
 > $$(LINK_PROGRAM)
 
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): LDFLAGS := $(call &,$0,LDFLAGS)
@@ -371,10 +408,14 @@ endef
 # Just stick with compiler driver, it does the right thing most of the rime.
 # $^ is all prerequisites of the target.
 define LINK_PROGRAM
-$(call RUN,GCC $$(@F),gcc $$(LDFLAGS) $$^ -o $$@ $$(LDLIBS))
+$(call RUN,GCC $$(@F),gcc $$(LDFLAGS) $$(patsubst %.do_update,%,$$^) -o $$@ $$(LDLIBS))
 endef
 
 # 'clean' just removed entire build directory.
 .PHONY: clean
 clean:
 > $(call RUN,RM BUILD_DIR,rm -rf $(BUILD_DIR))
+
+define NORM_PATH
+$(shell python -c 'import os, sys; print os.path.normpath(sys.argv[1])' $1)
+endef

@@ -86,15 +86,6 @@ then
     fi
 fi
 
-for p in $PREREQS
-do
-    HASH_FILE="$BUILD_DIR/$p.hash"
-    info -n Calculating hash for prerequisite "$p" ...
-    mkdir -p $(dirname "$HASH_FILE")
-    shasum -p "$p" > "$HASH_FILE"
-    info Saved to "$HASH_FILE"
-done
-
 CMD="$@"
 if [ ! -z $CMD_FILE ]
 then
