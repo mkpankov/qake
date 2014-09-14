@@ -59,6 +59,7 @@ fi
 CMD="$@"
 if [ ! -z $CMD_FILE ]
 then
+    mkdir -p $(dirname $CMD_FILE)
     echo "$CMD" > $CMD_FILE
 fi
 
