@@ -56,36 +56,6 @@ then
     info We\'re building phony target
 fi
 
-if [ "$PHONY" != "True" ]
-then
-    info Determining if prerequisites are really out of date
-
-    NEEDS_UPDATE=False
-    for p in $PREREQS
-    do
-        HASH_FILE="$BUILD_DIR/$p.hash"
-        if [ -f "$HASH_FILE" ]
-        then
-            if ! shasum -s -c "$HASH_FILE"
-            then
-                NEEDS_UPDATE=True
-                info "$p" is out of date
-                break
-            fi
-        else
-            info Hash of "$p" doesn\'t exist
-            NEEDS_UPDATE=True
-            break
-        fi
-    done
-
-    if [ $NEEDS_UPDATE = 'False' ] && [ -e $TARGET ]
-    then
-        info Nothing needs to be updated, exiting
-        exit 0
-    fi
-fi
-
 CMD="$@"
 if [ ! -z $CMD_FILE ]
 then
