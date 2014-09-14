@@ -1,3 +1,4 @@
 build/
 make-4.0/
 make-4.0.tar.bz2
+tests/*/*log*
