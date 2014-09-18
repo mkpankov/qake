@@ -329,12 +329,12 @@ $(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
   --target $$@ --command-file $$@.cmd --prerequisites $$? -- \
   --build-dir $(BUILD_DIR)
 
-DO_UPDATE_PROGRAM_$(call &,$0,BUILT_NAME) = $$(strip \
+DID_OBJ_UPDATE_$(call &,$0,BUILT_NAME) = $$(strip \
   $$(patsubst %,\
               %.do_update, \
               $$(OBJ_$(call &,$0,BUILT_NAME))))
 
-$$(DO_UPDATE_PROGRAM_$(call &,$0,BUILT_NAME)): \
+$$(DID_OBJ_UPDATE_$(call &,$0,BUILT_NAME)): \
   %.do_update: \
   %.hash.new
 >  if [ -f $$(patsubst %.hash.new,\
@@ -364,12 +364,12 @@ $$(HASH_NEW_OBJ_$(call &,$0,BUILT_NAME)):
   %
 > shasum $$< > $$@
 
-DO_UPDATE_OBJ_$(call &,$0,BUILT_NAME) = $$(strip \
+DID_SRC_UPDATE_$(call &,$0,BUILT_NAME) = $$(strip \
   $$(patsubst $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%,\
               $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.do_update, \
               $$(call &,$0,SRC)))
 
-$$(DO_UPDATE_OBJ_$(call &,$0,BUILT_NAME)): \
+$$(DID_SRC_UPDATE_$(call &,$0,BUILT_NAME)): \
   %.do_update: \
   %.hash.new
 >  if [ -f $$(patsubst %.hash.new,\
@@ -409,7 +409,7 @@ $(call TRACE1,PROGRAM_$(call &,$0,BUILT_NAME) := $(strip \
   $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/$(call &,$0,BUILT_NAME)))
 
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): \
-  $$(DO_UPDATE_PROGRAM_$(call &,$0,BUILT_NAME)) \
+  $$(DID_OBJ_UPDATE_$(call &,$0,BUILT_NAME)) \
 | $$(OBJ_$(call &,$0,BUILT_NAME))
 > $$(LINK_PROGRAM)
 
