@@ -330,19 +330,19 @@ $(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
   --build-dir $(BUILD_DIR)
 
 DO_UPDATE_PROGRAM_$(call &,$0,BUILT_NAME) = $$(strip \
-  $$(patsubst $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%,\
-              $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,BUILT_NAME))/%.o.do_update, \
-              $$(call &,$0,SRC)))
+  $$(patsubst %,\
+              %.do_update, \
+              $$(OBJ_$(call &,$0,BUILT_NAME))))
 
 $$(DO_UPDATE_PROGRAM_$(call &,$0,BUILT_NAME)): \
-  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,BUILT_NAME))/%.o.do_update: \
-  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,BUILT_NAME))/%.o.hash.new
->  if [ -f $$(patsubst $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.new,\
-                       $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.old,\
+  %.do_update: \
+  %.hash.new
+>  if [ -f $$(patsubst %.hash.new,\
+                       %.hash.old,\
                        $$<) ];\
    then \
-     if ! diff -q $$< $$(patsubst $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.new,\
-                                  $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.old,\
+     if ! diff -q $$< $$(patsubst %.hash.new,\
+                                  %.hash.old,\
                                   $$<) > /dev/null; \
      then \
          touch $$@; \
@@ -350,34 +350,34 @@ $$(DO_UPDATE_PROGRAM_$(call &,$0,BUILT_NAME)): \
    else \
      touch $$@; \
    fi; \
-   cp $$< $$(patsubst $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.new,\
-                      $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o.hash.old,\
+   cp $$< $$(patsubst %.hash.new,\
+                      %.hash.old,\
                       $$<)
 
 HASH_NEW_OBJ_$(call &,$0,BUILT_NAME) = $$(strip \
-  $$(patsubst $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%,\
-              $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,BUILT_NAME))/%.hash.new, \
-              $$(call &,$0,SRC)))
+  $$(patsubst %,\
+              %.hash.new, \
+              $$(OBJ_$(call &,$0,BUILT_NAME))))
 
 $$(HASH_NEW_OBJ_$(call &,$0,BUILT_NAME)):
-  $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,BUILT_NAME))/%.hash.new: \
-  $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,BUILT_NAME))/%
+  %.hash.new: \
+  %
 > shasum $$< > $$@
 
 DO_UPDATE_OBJ_$(call &,$0,BUILT_NAME) = $$(strip \
-  $$(patsubst $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%.c,\
-              $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.c.do_update, \
+  $$(patsubst $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%,\
+              $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.do_update, \
               $$(call &,$0,SRC)))
 
 $$(DO_UPDATE_OBJ_$(call &,$0,BUILT_NAME)): \
-  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.c.do_update: \
-  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.c.hash.new
->  if [ -f $$(patsubst $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.c.hash.new,\
-                       $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.c.hash.old,\
+  %.do_update: \
+  %.hash.new
+>  if [ -f $$(patsubst %.hash.new,\
+                       %.hash.old,\
                        $$<) ];\
    then \
-     if ! diff -q $$< $$(patsubst $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.c.hash.new,\
-                                  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.c.hash.old,\
+     if ! diff -q $$< $$(patsubst %.hash.new,\
+                                  %.hash.old,\
                                   $$<) > /dev/null; \
      then \
          touch $$@; \
@@ -385,13 +385,13 @@ $$(DO_UPDATE_OBJ_$(call &,$0,BUILT_NAME)): \
    else \
      touch $$@; \
    fi; \
-   cp $$< $$(patsubst $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.c.hash.new,\
-                      $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.c.hash.old,\
+   cp $$< $$(patsubst %.hash.new,\
+                      %.hash.old,\
                       $$<)
 
 HASH_NEW_SRC_$(call &,$0,SOURCE_NAME) = $$(strip \
-  $$(patsubst $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%.c,\
-              $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.c.hash.new, \
+  $$(patsubst $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%,\
+              $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.hash.new, \
               $(call &,$0,SRC)))
 
 $$(HASH_NEW_SRC_$(call &,$0,BUILT_NAME)):
