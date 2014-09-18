@@ -334,25 +334,6 @@ DID_OBJ_UPDATE_$(call &,$0,BUILT_NAME) = $$(strip \
               %.do_update, \
               $$(OBJ_$(call &,$0,BUILT_NAME))))
 
-$$(DID_OBJ_UPDATE_$(call &,$0,BUILT_NAME)): \
-  %.do_update: \
-  %.hash.new
->  if [ -f $$(patsubst %.hash.new,\
-                       %.hash.old,\
-                       $$<) ];\
-   then \
-     if ! diff -q $$< $$(patsubst %.hash.new,\
-                                  %.hash.old,\
-                                  $$<) > /dev/null; \
-     then \
-         touch $$@; \
-     fi; \
-   else \
-     touch $$@; \
-   fi; \
-   cp $$< $$(patsubst %.hash.new,\
-                      %.hash.old,\
-                      $$<)
 
 HASH_NEW_OBJ_$(call &,$0,BUILT_NAME) = $$(strip \
   $$(patsubst %,\
@@ -381,10 +362,8 @@ $$(HASH_NEW_SRC_$(call &,$0,BUILT_NAME)):
   $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%
 > shasum $$< > $$@
 
-# This can be made non-static
-$$(DID_SRC_UPDATE_$(call &,$0,BUILT_NAME)): \
-  %.do_update: \
-  %.hash.new
+%.do_update: \
+%.hash.new
 >  if [ -f $$(patsubst %.hash.new,\
                        %.hash.old,\
                        $$<) ];\
