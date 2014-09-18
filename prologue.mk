@@ -346,7 +346,7 @@ $$(HASH_NEW_OBJ_$(call &,$0,BUILT_NAME)):
 > shasum $$< > $$@
 
 # The following two are the same, modulo suffix
-DID_SRC_UPDATE_$(call &,$0,BUILT_NAME) = $$(strip \
+DID_SRC_UPDATE_$(call &,$0,SOURCE_NAME) = $$(strip \
   $$(patsubst $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%,\
               $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.do_update, \
               $$(call &,$0,SRC)))
@@ -357,7 +357,7 @@ HASH_NEW_SRC_$(call &,$0,SOURCE_NAME) = $$(strip \
               $(call &,$0,SRC)))
 
 # This uses reverse pattern substitution of above
-$$(HASH_NEW_SRC_$(call &,$0,BUILT_NAME)):
+$$(HASH_NEW_SRC_$(call &,$0,SOURCE_NAME)):
   $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.hash.new: \
   $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%
 > shasum $$< > $$@
