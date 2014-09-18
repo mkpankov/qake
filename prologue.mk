@@ -320,7 +320,7 @@ $(call TRACE1,OBJ_$(call &,$0,BUILT_NAME) := $(strip \
 
 $(call TRACE1,$(OBJ_$(call &,$0,BUILT_NAME)): \
   $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o: \
-  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.do_update \
+  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update \
 | $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/% \
   $$(DIRECTORY)
 > $$(COMPILE_OBJECT))
@@ -331,7 +331,7 @@ $(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
 
 DID_OBJ_UPDATE_$(call &,$0,BUILT_NAME) = $$(strip \
   $$(patsubst %,\
-              %.do_update, \
+              %.did_update, \
               $$(OBJ_$(call &,$0,BUILT_NAME))))
 
 
@@ -348,7 +348,7 @@ $$(HASH_NEW_OBJ_$(call &,$0,BUILT_NAME)):
 # The following two are the same, modulo suffix
 DID_SRC_UPDATE_$(call &,$0,SOURCE_NAME) = $$(strip \
   $$(patsubst $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%,\
-              $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.do_update, \
+              $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update, \
               $$(call &,$0,SRC)))
 
 HASH_NEW_SRC_$(call &,$0,SOURCE_NAME) = $$(strip \
@@ -362,7 +362,7 @@ $$(HASH_NEW_SRC_$(call &,$0,SOURCE_NAME)):
   $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%
 > shasum $$< > $$@
 
-%.do_update: \
+%.did_update: \
 %.hash.new
 >  if [ -f $$(patsubst %.hash.new,\
                        %.hash.old,\
@@ -417,8 +417,8 @@ endef
 # https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
 #
 define COMPILE_OBJECT
-$(call RUN,GCC $$(@F),gcc $$(CFLAGS) $$(patsubst $(BUILD_DIR)/%.do_update,$(SRC_DIR)/%,$$<) -o $$@ -c -MD -MF $$@.d -MP); \
-sed -i -e 's|\\b$(patsubst $(BUILD_DIR)/%.do_update,$(SRC_DIR)/%,$<)\b||g' $@.d
+$(call RUN,GCC $$(@F),gcc $$(CFLAGS) $$(patsubst $(BUILD_DIR)/%.did_update,$(SRC_DIR)/%,$$<) -o $$@ -c -MD -MF $$@.d -MP); \
+sed -i -e 's|\\b$(patsubst $(BUILD_DIR)/%.did_update,$(SRC_DIR)/%,$<)\b||g' $@.d
 endef
 
 # Another canned recipe - for linking program out of objects.
@@ -428,7 +428,7 @@ endef
 # Just stick with compiler driver, it does the right thing most of the rime.
 # $^ is all prerequisites of the target.
 define LINK_PROGRAM
-$(call RUN,GCC $$(@F),gcc $$(LDFLAGS) $$(patsubst %.do_update,%,$$^) -o $$@ $$(LDLIBS))
+$(call RUN,GCC $$(@F),gcc $$(LDFLAGS) $$(patsubst %.did_update,%,$$^) -o $$@ $$(LDLIBS))
 endef
 
 # 'clean' just removed entire build directory.
