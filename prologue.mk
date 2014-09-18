@@ -329,38 +329,17 @@ $(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
   --target $$@ --command-file $$@.cmd --prerequisites $$? -- \
   --build-dir $(BUILD_DIR)
 
-DID_OBJ_UPDATE_$(call &,$0,BUILT_NAME) = $$(strip \
-  $$(patsubst %,\
-              %.did_update, \
-              $$(OBJ_$(call &,$0,BUILT_NAME))))
+$$(eval $$(call DEFINE_HASHED_CHAIN, \
+                $$(call &,$0,BUILT_NAME), \
+                %, \
+                %, \
+                $$(OBJ_$(call &,$0,BUILT_NAME))))
 
-
-HASH_NEW_OBJ_$(call &,$0,BUILT_NAME) = $$(strip \
-  $$(patsubst %,\
-              %.hash.new, \
-              $$(OBJ_$(call &,$0,BUILT_NAME))))
-
-$$(HASH_NEW_OBJ_$(call &,$0,BUILT_NAME)):
-  %.hash.new: \
-  %
-> shasum $$< > $$@
-
-# The following two are the same, modulo suffix
-DID_SRC_UPDATE_$(call &,$0,SOURCE_NAME) = $$(strip \
-  $$(patsubst $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%,\
-              $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update, \
-              $$(call &,$0,SRC)))
-
-HASH_NEW_SRC_$(call &,$0,SOURCE_NAME) = $$(strip \
-  $$(patsubst $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%,\
-              $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.hash.new, \
-              $(call &,$0,SRC)))
-
-# This uses reverse pattern substitution of above
-$$(HASH_NEW_SRC_$(call &,$0,SOURCE_NAME)):
-  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.hash.new: \
-  $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%
-> shasum $$< > $$@
+$$(eval $$(call DEFINE_HASHED_CHAIN, \
+                $$(call &,$0,SOURCE_NAME), \
+                $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%, \
+                $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%, \
+                $$(call &,$0,SRC)))
 
 %.did_update: \
 %.hash.new
@@ -391,7 +370,7 @@ $(call TRACE1,PROGRAM_$(call &,$0,BUILT_NAME) := $(strip \
   $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/$(call &,$0,BUILT_NAME)))
 
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): \
-  $$(DID_OBJ_UPDATE_$(call &,$0,BUILT_NAME)) \
+  $$(DID_UPDATE_$(call &,$0,BUILT_NAME)) \
 | $$(OBJ_$(call &,$0,BUILT_NAME))
 > $$(LINK_PROGRAM)
 
@@ -402,6 +381,30 @@ $$(PROGRAM_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
   --build-dir $(BUILD_DIR)
 
 ALL += $$(PROGRAM_$(call &,$0,BUILT_NAME))
+endef
+
+define DEFINE_HASHED_CHAIN
+$(strip \
+$(call FUNCTION_DEBUG_HEADER,$0)
+$(call let,$0,VAR_NAME_SUFFIX,$1)
+$(call let,$0,SOURCE_PATTERN,$2)
+$(call let,$0,TARGET_PATTERN,$3)
+$(call let,$0,SOURCE_LIST,$4)
+)
+DID_UPDATE_$$(call &,$0,VAR_NAME_SUFFIX) = $$(strip \
+  $$(patsubst $(call &,$0,SOURCE_PATTERN),\
+              $(call &,$0,TARGET_PATTERN).did_update, \
+              $(call &,$0,SOURCE_LIST)))
+
+HASH_NEW_$$(call &,$0,VAR_NAME_SUFFIX) = $$(strip \
+  $$(patsubst $(call &,$0,SOURCE_PATTERN),\
+              $(call &,$0,TARGET_PATTERN).hash.new, \
+              $(call &,$0,SOURCE_LIST)))
+
+$$(HASH_NEW_$$(call &,$0,VAR_NAME_SUFFIX)):
+  $(call &,$0,TARGET_PATTERN).hash.new: \
+  $(call &,$0,SOURCE_PATTERN)
+> shasum $$< > $$@
 endef
 
 # This is called 'canned recipe'.
