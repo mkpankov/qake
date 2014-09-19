@@ -330,13 +330,13 @@ $(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
   --build-dir $(BUILD_DIR)
 
 $$(eval $$(call DEFINE_HASHED_CHAIN, \
-                $$(call &,$0,BUILT_NAME), \
+                OBJ_$$(call &,$0,BUILT_NAME), \
                 %, \
                 %, \
                 $$(OBJ_$(call &,$0,BUILT_NAME))))
 
 $$(eval $$(call DEFINE_HASHED_CHAIN, \
-                $$(call &,$0,SOURCE_NAME), \
+                SRC_$$(call &,$0,SOURCE_NAME), \
                 $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%, \
                 $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%, \
                 $$(call &,$0,SRC)))
@@ -370,7 +370,7 @@ $(call TRACE1,PROGRAM_$(call &,$0,BUILT_NAME) := $(strip \
   $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/$(call &,$0,BUILT_NAME)))
 
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): \
-  $$(DID_UPDATE_$(call &,$0,BUILT_NAME)) \
+  $$(DID_UPDATE_OBJ_$(call &,$0,BUILT_NAME)) \
 | $$(OBJ_$(call &,$0,BUILT_NAME))
 > $$(LINK_PROGRAM)
 
