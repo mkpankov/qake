@@ -1,0 +1,12 @@
+* Add tracking of commands used to build the targets
+
+** Add hashing to prototype of command tracking.
+   Implement it as separate prototype
+
+*** Move DEFINE_HASHED_CHAIN
+
+*** Add hashing just to targets themselves
+
+*** Add hashing to commands
+
+** Port prototype to main PROGRAM macro
