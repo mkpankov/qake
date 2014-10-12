@@ -2,8 +2,7 @@ RES = build/res/b
 
 all: $(RES)
 
-.PHONY: build/aux/build/res/a.cmd.new
-build/aux/build/res/a.cmd.new: | $(DIRECTORY)
+build/aux/build/res/a.cmd.new: Makefile | $(DIRECTORY)
 > echo 'echo A; echo I am a > $(call GET_TARGET_PATH,$@)' > $@
 
 build/aux/%.cmd.did_update: \

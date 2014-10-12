@@ -248,6 +248,8 @@ endef
 # It also makes implementation of 'clean' target trivial:
 #   just remove entire directory.
 BUILD_DIR := build
+
+RESULTS_DIR := $(BUILD_DIR)/res
 # This directory will hold sources.
 # Good build system mirrors sources structure in build directory --
 #   it allows to manage pattern rules easier.
@@ -315,19 +317,19 @@ $(call let,$0,LDLIBS,$6)
 
 $(call TRACE1,OBJ_$(call &,$0,BUILT_NAME) := $(strip \
   $(patsubst $(SRC_DIR)/$(call &,$0,SOURCE_NAME)%,\
-             $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o,\
+             $(RESULTS_DIR)/$(call &,$0,BUILT_NAME)/%.o,\
              $(call &,$0,SRC))))
 
 $(call TRACE1,$(OBJ_$(call &,$0,BUILT_NAME)): \
-  $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o: \
-  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update \
+  $(RESULTS_DIR)/$(call &,$0,BUILT_NAME)/%.o: \
+  $(call NORM_PATH,$(RESULTS_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update \
 | $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/% \
   $$(DIRECTORY)
 > $$(COMPILE_OBJECT))
 $(OBJ_$(call &,$0,BUILT_NAME)): CFLAGS := $(call &,$0,CFLAGS)
 $(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
   --target $$@ --command-file $$@.cmd --prerequisites $$? -- \
-  --build-dir $(BUILD_DIR)
+  --build-dir $(RESULTS_DIR)
 
 $$(eval $$(call DEFINE_HASHED_CHAIN, \
                 OBJ_$$(call &,$0,BUILT_NAME), \
@@ -338,7 +340,7 @@ $$(eval $$(call DEFINE_HASHED_CHAIN, \
 $$(eval $$(call DEFINE_HASHED_CHAIN, \
                 SRC_$$(call &,$0,SOURCE_NAME), \
                 $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%, \
-                $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%, \
+                $$(call NORM_PATH,$(RESULTS_DIR)/$(call &,$0,SOURCE_NAME))/%, \
                 $$(call &,$0,SRC)))
 
 %.did_update: \
@@ -367,7 +369,7 @@ $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
 -include $$(DEP_$(call &,$0,BUILT_NAME))
 
 $(call TRACE1,PROGRAM_$(call &,$0,BUILT_NAME) := $(strip \
-  $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/$(call &,$0,BUILT_NAME)))
+  $(RESULTS_DIR)/$(call &,$0,BUILT_NAME)/$(call &,$0,BUILT_NAME)))
 
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): \
   $$(DID_UPDATE_OBJ_$(call &,$0,BUILT_NAME)) \
@@ -378,7 +380,7 @@ $$(PROGRAM_$(call &,$0,BUILT_NAME)): LDFLAGS := $(call &,$0,LDFLAGS)
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): LDLIBS := $(call &,$0,LDLIBS)
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
   --target $$@ --command-file $$@.cmd --prerequisites $$? -- \
-  --build-dir $(BUILD_DIR)
+  --build-dir $(RESULTS_DIR)
 
 ALL += $$(PROGRAM_$(call &,$0,BUILT_NAME))
 endef

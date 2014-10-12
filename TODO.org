@@ -10,3 +10,5 @@
 *** Add hashing to commands
 
 ** Port prototype to main PROGRAM macro
+
+** Fix actual tracking of commands in command prototype
