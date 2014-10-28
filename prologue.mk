@@ -65,11 +65,16 @@ $(if $(shell if ! $(MAKE) --version | grep 'GNU Make 4.' > /dev/null; \
 MAKEFLAGS := -r -R -j -O -s
 
 # Second expansion is used in this solution to seamlessly create
-# directories for target files.
+#   directories for target files.
+# It means prerequisite list will be re-expanded second time before
+#   executing the recipe. Usually prerequisites are evaluated just
+#   when reading the Makefile.
 # Secondary expansion:
 # https://www.gnu.org/software/make/manual/html_node/Secondary-Expansion.html
 .SECONDEXPANSION:
 
+# This is to use only one shell process for entire execution of recipe
+# for target.
 .ONESHELL:
 
 # We'll introduce some convenience wrappers to ease debugging of
@@ -441,6 +446,12 @@ endef
 clean:
 > $(call RUN,RM BUILD_DIR,rm -rf $(BUILD_DIR))
 
+# This is a silly implementation of path normalization.
+# We need this because there are paths with optional user-defined components.
+# When these parts of paths are empty, we end up with double slashes and
+#   Make's path pattern matching stops working.
+# FIXME: There should be better ways to do it, as currently it completely
+#   destroys performance (this is called several times per target).
 define NORM_PATH
 $(shell python -c 'import os, sys; print os.path.normpath(sys.argv[1])' $1)
 endef
