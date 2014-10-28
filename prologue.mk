@@ -1,4 +1,4 @@
-SHELL := $(QAKE_INCLUDE_DIR)/relay
+SHELL := $(QAKE_INCLUDE_DIR)/relay.sh
 
 .SHELLFLAGS := --phony
 
