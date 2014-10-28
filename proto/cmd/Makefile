@@ -3,11 +3,11 @@ RES = build/res/b
 all: $(RES)
 
 build/aux/build/res/a.cmd.new: Makefile | $(DIRECTORY)
-> echo 'echo A; echo I am a\nWell aaaa > $(call GET_TARGET_PATH,$@)' > $@
+> echo 'echo A; echo I am a\nWell aaaa azaza > $(call GET_TARGET_PATH,$@)' > $@
 
-build/aux/build/res/b.cmd.new: Makefile build/aux/build/res/a.did_update | $(DIRECTORY)
+build/aux/build/res/b.cmd.new: build/aux/build/res/a.did_update Makefile | $(DIRECTORY)
 > echo 'echo B; cat $< > $(call GET_TARGET_PATH,$@);
-> echo And I am b >> $(call GET_TARGET_PATH,$@)' > $@
+> echo And I am b buzzz >> $(call GET_TARGET_PATH,$@)' > $@
 
 build/res/a: \
   build/aux/build/res/a.cmd.did_update \
@@ -68,26 +68,6 @@ build/aux/%.hash.new
    cp $< $(<:.hash.new=.hash.old)
 
 
-build/aux/build/res/a.hash.new: \
-build/res/a
-> echo Hashing $< to $@
-> shasum $< > $@
-
-build/aux/build/res/a.cmd.new.hash.new: \
-build/aux/build/res/a.cmd.new
-> echo Hashing $< to $@
-> shasum $< > $@
-
-build/aux/build/res/b.hash.new: \
-build/res/b
-> echo Hashing $< to $@
-> shasum $< > $@
-
-build/aux/build/res/b.cmd.new.hash.new: \
-build/aux/build/res/b.cmd.new
-> echo Hashing $< to $@
-> shasum $< > $@
-
 build/aux/build/res/b.cmd.did_update: \
 build/aux/build/res/b.cmd.new.hash.new
 >  if [ -f $(<:.hash.new=.hash.old) ];\
@@ -116,7 +96,12 @@ build/aux/build/res/a.cmd.new.hash.new
    cp $< $(<:.hash.new=.hash.old)
 
 
-build/aux/%.hash_new: \
-build/res/%
+build/aux/%.hash.new: \
+%
+> echo Hashing $< to $@
+> shasum $< > $@
+
+%.hash.new: \
+%
 > echo Hashing $< to $@
 > shasum $< > $@
