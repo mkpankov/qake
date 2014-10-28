@@ -3,26 +3,24 @@ RES = build/res/b
 all: $(RES)
 
 build/aux/build/res/a.cmd.new: Makefile | $(DIRECTORY)
-> echo 'echo A; echo I am a > $(call GET_TARGET_PATH,$@)' > $@
+> echo 'echo A; echo I am a\nWell aaaa > $(call GET_TARGET_PATH,$@)' > $@
 
-build/aux/%.cmd.did_update: \
-  build/aux/%.cmd.new \
-| $(DIRECTORY)
->  if [ -f $(<:.cmd.new=.cmd.old) ];\
-   then \
-     if ! diff -q $< $(<:.cmd.new=.cmd.old) > /dev/null; \
-     then \
-         touch $@; \
-     fi; \
-   else \
-     touch $@; \
-   fi; \
-   cp $< $(<:.cmd.new=.cmd.old)
-
-
-build/aux/build/res/b.cmd.new: build/aux/build/res/a.did_update | $(DIRECTORY)
+build/aux/build/res/b.cmd.new: Makefile build/aux/build/res/a.did_update | $(DIRECTORY)
 > echo 'echo B; cat $< > $(call GET_TARGET_PATH,$@);
 > echo And I am b >> $(call GET_TARGET_PATH,$@)' > $@
+
+build/res/a: \
+  build/aux/build/res/a.cmd.did_update \
+| build/aux/build/res/a.cmd.new \
+  $(DIRECTORY)
+> eval $$(cat $(firstword $|))
+
+build/res/b: \
+  build/aux/build/res/b.cmd.did_update \
+  build/aux/build/res/a.did_update \
+| build/aux/build/res/b.cmd.new \
+$(DIRECTORY)
+> eval $$(cat $(firstword $|))
 
 build/res/%: \
   $$(call GET_CMD_DID_UPDATE,$$@) \
@@ -72,9 +70,53 @@ build/aux/%.hash.new
 
 build/aux/build/res/a.hash.new: \
 build/res/a
+> echo Hashing $< to $@
 > shasum $< > $@
+
+build/aux/build/res/a.cmd.new.hash.new: \
+build/aux/build/res/a.cmd.new
+> echo Hashing $< to $@
+> shasum $< > $@
+
+build/aux/build/res/b.hash.new: \
+build/res/b
+> echo Hashing $< to $@
+> shasum $< > $@
+
+build/aux/build/res/b.cmd.new.hash.new: \
+build/aux/build/res/b.cmd.new
+> echo Hashing $< to $@
+> shasum $< > $@
+
+build/aux/build/res/b.cmd.did_update: \
+build/aux/build/res/b.cmd.new.hash.new
+>  if [ -f $(<:.hash.new=.hash.old) ];\
+   then \
+     if ! diff -q $< $(<:.hash.new=.hash.old) > /dev/null; \
+     then \
+         touch $@; \
+     fi; \
+   else \
+     touch $@; \
+   fi; \
+   cp $< $(<:.hash.new=.hash.old)
+
+
+build/aux/build/res/a.cmd.did_update: \
+build/aux/build/res/a.cmd.new.hash.new
+>  if [ -f $(<:.hash.new=.hash.old) ];\
+   then \
+     if ! diff -q $< $(<:.hash.new=.hash.old) > /dev/null; \
+     then \
+         touch $@; \
+     fi; \
+   else \
+     touch $@; \
+   fi; \
+   cp $< $(<:.hash.new=.hash.old)
 
 
 build/aux/%.hash_new: \
 build/res/%
+> echo Hashing $< to $@
 > shasum $< > $@
