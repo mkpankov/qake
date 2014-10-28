@@ -1,5 +1,11 @@
+# This is to precisely track what's going on.
+# It's used by Make as command interpreter.
+# By default, Make uses /bin/sh as interpreter for recipes.
+# We overload that to pass everything through our script.
 SHELL := $(QAKE_INCLUDE_DIR)/relay.sh
 
+# This was to inhibit hash checking for phony targets.
+# TODO: Remove this setting.
 .SHELLFLAGS := --phony
 
 # Check version of used Make.
@@ -74,7 +80,8 @@ MAKEFLAGS := -r -R -j -O -s
 .SECONDEXPANSION:
 
 # This is to use only one shell process for entire execution of recipe
-# for target.
+#   for target.
+# We need it to store entire recipe in one .cmd file.
 .ONESHELL:
 
 # We'll introduce some convenience wrappers to ease debugging of
@@ -244,6 +251,9 @@ endef
 > $(call RUN,MKDIR $(@D),mkdir -p $(@D))
 > touch $@
 
+# This part sets target-specific shell flags.
+# These are processed by relay.sh.
+# TODO: Not all of them are actually required by now.
 %/.directory.marker: .SHELLFLAGS = \
   --target $@ --command-file $@.cmd --prerequisites $? --
 
@@ -254,7 +264,9 @@ endef
 #   just remove entire directory.
 BUILD_DIR := build
 
+# This directory will hold resulting files.
 RESULTS_DIR := $(BUILD_DIR)/res
+
 # This directory will hold sources.
 # Good build system mirrors sources structure in build directory --
 #   it allows to manage pattern rules easier.
@@ -268,7 +280,6 @@ SRC_DIR := src
 # Double dollars are to prevent treatment as Make variable -
 #   one dollar will get eaten by expansion, second will be left and
 #   actually passed to the shell.
-# '@' in front of the recipe is to disable echoing of the command itself.
 define RUN
 $(strip \
 $(call FUNCTION_DEBUG_HEADER,$0)
@@ -311,6 +322,9 @@ endef
 #
 # Finally, we do ALL += $(PROGRAM_b) to make 'all' target build this program.
 #
+# You can see all the generated goodness by replacing
+#   $(eval $(call PROGRAM, ...)) with
+#   $(info $(call PROGRAM, ...))
 define PROGRAM
 $(call FUNCTION_DEBUG_HEADER,$0)
 $(call let,$0,SOURCE_NAME,$1)
@@ -441,7 +455,7 @@ define LINK_PROGRAM
 $(call RUN,GCC $$(@F),gcc $$(LDFLAGS) $$(patsubst %.did_update,%,$$^) -o $$@ $$(LDLIBS))
 endef
 
-# 'clean' just removed entire build directory.
+# 'clean' just removes entire build directory.
 .PHONY: clean
 clean:
 > $(call RUN,RM BUILD_DIR,rm -rf $(BUILD_DIR))
