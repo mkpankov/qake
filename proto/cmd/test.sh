@@ -54,7 +54,7 @@ case_command_a_change_build () {
 case_command_b_change_build () {
     rm -rf build
     $QAKE >/dev/null 2>&1
-    git am 0002-Change-commands-for-b.patch
+    git am 0001-Change-commands-for-b.patch
     $QAKE | sort > log
     cat command_b_change_build.log | sort > command_b_change_build.log.sorted
     diff -q log command_b_change_build.log.sorted
