@@ -1,5 +1,7 @@
 RES = build/res/b
 
+.SHELLFLAGS = --target $@
+
 all: $(RES)
 
 build/aux/build/res/a.cmd.new: Makefile | $(DIRECTORY)
