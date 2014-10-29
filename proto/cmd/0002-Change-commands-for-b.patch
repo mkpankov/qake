@@ -1,0 +1,25 @@
+From 44985469a0b5a406327de2751a6ca7ff12514527 Mon Sep 17 00:00:00 2001
+From: Michael Pankov <constantius9@gmail.com>
+Date: Wed, 29 Oct 2014 17:16:52 +0300
+Subject: [PATCH 2/2] Change commands for b
+
+---
+ proto/cmd/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/proto/cmd/Makefile b/proto/cmd/Makefile
+index a445aa8..712ce38 100644
+--- a/proto/cmd/Makefile
++++ b/proto/cmd/Makefile
+@@ -7,7 +7,7 @@ build/aux/build/res/a.cmd.new: Makefile | $(DIRECTORY)
+ 
+ build/aux/build/res/b.cmd.new: build/aux/build/res/a.did_update Makefile | $(DIRECTORY)
+ > echo 'echo B; cat $< > $(call GET_TARGET_PATH,$@);
+-> echo And I am b buzzz >> $(call GET_TARGET_PATH,$@)' > $@
++> echo And I am b >> $(call GET_TARGET_PATH,$@)' > $@
+ 
+ build/res/a: \
+   build/aux/build/res/a.cmd.did_update \
+-- 
+1.9.1
+
