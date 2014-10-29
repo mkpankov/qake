@@ -1,14 +1,22 @@
 * Add tracking of commands used to build the targets
 
-** Add hashing to prototype of command tracking.
+** DONE Add hashing to prototype of command tracking.
+   CLOSED: [2014-10-29 Ср. 01:48]
    Implement it as separate prototype
 
-*** Move DEFINE_HASHED_CHAIN
+*** DONE Add hashing just to targets themselves
+    CLOSED: [2014-10-29 Ср. 01:49]
 
-*** Add hashing just to targets themselves
+*** DONE Add hashing to commands
+    CLOSED: [2014-10-29 Ср. 01:49]
 
-*** Add hashing to commands
-
+** DONE Fix actual tracking of commands in command prototype
+   CLOSED: [2014-10-29 Ср. 01:49]
+** Add tests to command tracking prototype
+*** Test the modification of command
+*** Test the modification of file contents
+*** Test the touch of file contents
+** Move the results to res, auxiliary to aux in main
 ** Port prototype to main PROGRAM macro
-
-** Fix actual tracking of commands in command prototype
+* Write the tutorial
+* Write the README
