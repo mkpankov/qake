@@ -33,6 +33,8 @@ define GET_CMD_DID_UPDATE
 $(patsubst %,build/aux/%.cmd.did_update,$1)
 endef
 
+.PRECIOUS: build/aux/%.did_update
+
 build/aux/%.did_update: \
 build/aux/%.hash.new
 >  if [ -f $(<:.hash.new=.hash.old) ];\
@@ -46,6 +48,7 @@ build/aux/%.hash.new
    fi; \
    cp $< $(<:.hash.new=.hash.old)
 
+.PRECIOUS: build/aux/%.cmd.did_update
 
 build/aux/%.cmd.did_update: \
 build/aux/%.cmd.new.hash.new
@@ -60,13 +63,14 @@ build/aux/%.cmd.new.hash.new
    fi; \
    cp $< $(<:.hash.new=.hash.old)
 
+.PRECIOUS: build/aux/%.hash.new
 
 build/aux/%.hash.new: \
 %
-> echo Hashing $< to $@
+> echo Hashing from result $< to $@
 > shasum $< > $@
 
 build/aux/%.hash.new: \
 build/aux/%
-> echo Hashing $< to $@
+> echo Hashing auxiliary $< to $@
 > shasum $< > $@
