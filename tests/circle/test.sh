@@ -23,14 +23,6 @@ case_null_build () {
     diff -q log null_build.log.sorted
 }
 
-case_null_build () {
-    rm -rf build
-    $QAKE >/dev/null 2>&1
-    $QAKE | sort > log
-    cat null_build.log | sort > null_build.log.sorted
-    diff -q log null_build.log.sorted
-}
-
 case_meaningless_change_build () {
     rm -rf build
     $QAKE >/dev/null 2>&1
