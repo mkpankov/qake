@@ -62,9 +62,9 @@ then
     mkdir -p $(dirname $CMD_FILE)
     echo "$CMD" > $CMD_FILE
 fi
-if [ ! -z $TARGET ]
+if [ ! -z $TARGET ] && [ ! -d $(dirname $TARGET) ]
 then
-    info Creating directory $(dirname $TARGET) 'for' $TARGET
+    echo MKDIR $(dirname $TARGET)
     mkdir -p $(dirname $TARGET)
 fi
 
