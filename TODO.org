@@ -12,7 +12,8 @@
 
 ** DONE Fix actual tracking of commands in command prototype
    CLOSED: [2014-10-29 Ср. 01:49]
-** Add tests to command tracking prototype
+** DONE Add tests to command tracking prototype
+   CLOSED: [2014-10-29 Ср. 17:30]
 *** Test the modification of command
 *** Test the modification of file contents
 *** Test the touch of file contents
