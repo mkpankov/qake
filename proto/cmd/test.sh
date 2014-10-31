@@ -48,7 +48,7 @@ case_command_a_change_build () {
     $QAKE | sort > log
     cat command_a_change_build.log | sort > command_a_change_build.log.sorted
     diff -q log command_a_change_build.log.sorted
-    git reset --hard HEAD~1
+    git checkout Makefile
 }
 
 case_command_b_change_build () {
@@ -58,7 +58,7 @@ case_command_b_change_build () {
     $QAKE | sort > log
     cat command_b_change_build.log | sort > command_b_change_build.log.sorted
     diff -q log command_b_change_build.log.sorted
-    git reset --hard HEAD~1
+    git checkout Makefile
 }
 
 set_up
