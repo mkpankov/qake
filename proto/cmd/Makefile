@@ -59,21 +59,6 @@ $(AUX_DIR)/%.hash.new
    fi; \
    cp $< $(<:.hash.new=.hash.old)
 
-.PRECIOUS: build/aux/%.cmd.did_update
-
-$(AUX_DIR)/%.cmd.did_update: \
-$(AUX_DIR)/%.cmd.hash.new
->  if [ -f $(<:.hash.new=.hash.old) ];\
-   then \
-     if ! diff -q $< $(<:.hash.new=.hash.old) > /dev/null; \
-     then \
-         touch $@; \
-     fi; \
-   else \
-     touch $@; \
-   fi; \
-   cp $< $(<:.hash.new=.hash.old)
-
 .PRECIOUS: build/aux/%.hash.new
 
 $(AUX_DIR)/%.hash.new: \
