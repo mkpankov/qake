@@ -11,9 +11,9 @@ diff --git a/proto/cmd/Makefile b/proto/cmd/Makefile
 index 1f7ab7a..ab9ae13 100644
 --- a/proto/cmd/Makefile
 +++ b/proto/cmd/Makefile
-@@ -9,7 +9,7 @@ build/aux/build/res/a.cmd.new: Makefile | $(DIRECTORY)
+@@ -9,8 +9,7 @@ build/aux/build/res/a.cmd: Makefile | $(DIRECTORY)
  
- build/aux/build/res/b.cmd.new: build/aux/build/res/a.did_update Makefile | $(DIRECTORY)
+ build/aux/build/res/b.cmd: build/aux/build/res/a.did_update Makefile | $(DIRECTORY)
  > echo 'echo B; cat $< > $(call GET_TARGET_PATH,$@);
 -> echo And I am b buzzz >> $(call GET_TARGET_PATH,$@)' > $@
 +> echo And I am b buzzz bbbb >> $(call GET_TARGET_PATH,$@)' > $@

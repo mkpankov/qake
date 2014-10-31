@@ -4,16 +4,16 @@ RES = build/res/b
 
 all: $(RES)
 
-build/aux/build/res/a.cmd.new: Makefile | $(DIRECTORY)
-> echo 'echo A; echo I am a\nWell aaaa azaza > $(call GET_TARGET_PATH,$@)' > $@
+build/aux/build/res/a.cmd: Makefile | $(DIRECTORY)
+> echo 'echo A; echo I am a > $(call GET_TARGET_PATH,$@)' > $@
 
-build/aux/build/res/b.cmd.new: build/aux/build/res/a.did_update Makefile | $(DIRECTORY)
+build/aux/build/res/b.cmd: build/aux/build/res/a.did_update Makefile | $(DIRECTORY)
 > echo 'echo B; cat $< > $(call GET_TARGET_PATH,$@);
 > echo And I am b buzzz >> $(call GET_TARGET_PATH,$@)' > $@
 
 build/res/%: \
   build/aux/build/res/%.cmd.did_update \
-| build/aux/build/res/%.cmd.new \
+| build/aux/build/res/%.cmd \
   $(DIRECTORY)
 > eval $$(cat $(firstword $|))
 
@@ -22,11 +22,11 @@ build/res/b: \
 | build/res/a
 
 define GET_TARGET_PATH
-$(patsubst build/aux/%.cmd.new,%,$1)
+$(patsubst build/aux/%.cmd,%,$1)
 endef
 
 define GET_CMD_PATH
-$(patsubst %,build/aux/%.cmd.new,$1)
+$(patsubst %,build/aux/%.cmd,$1)
 endef
 
 define GET_CMD_DID_UPDATE
@@ -51,7 +51,7 @@ build/aux/%.hash.new
 .PRECIOUS: build/aux/%.cmd.did_update
 
 build/aux/%.cmd.did_update: \
-build/aux/%.cmd.new.hash.new
+build/aux/%.cmd.hash.new
 >  if [ -f $(<:.hash.new=.hash.old) ];\
    then \
      if ! diff -q $< $(<:.hash.new=.hash.old) > /dev/null; \

@@ -11,14 +11,14 @@ diff --git a/proto/cmd/Makefile b/proto/cmd/Makefile
 index 0819c9d..a445aa8 100644
 --- a/proto/cmd/Makefile
 +++ b/proto/cmd/Makefile
-@@ -3,7 +3,7 @@ RES = build/res/b
+@@ -3,8 +3,7 @@ RES = build/res/b
  all: $(RES)
  
- build/aux/build/res/a.cmd.new: Makefile | $(DIRECTORY)
--> echo 'echo A; echo I am a\nWell aaaa azaza > $(call GET_TARGET_PATH,$@)' > $@
-+> echo 'echo A; echo I am a > $(call GET_TARGET_PATH,$@)' > $@
+ build/aux/build/res/a.cmd: Makefile | $(DIRECTORY)
+-> echo 'echo A; echo I am a > $(call GET_TARGET_PATH,$@)' > $@
++> echo 'echo A; echo I am a aaaa > $(call GET_TARGET_PATH,$@)' > $@
  
- build/aux/build/res/b.cmd.new: build/aux/build/res/a.did_update Makefile | $(DIRECTORY)
+ build/aux/build/res/b.cmd: build/aux/build/res/a.did_update Makefile | $(DIRECTORY)
  > echo 'echo B; cat $< > $(call GET_TARGET_PATH,$@);
 -- 
 1.9.1
