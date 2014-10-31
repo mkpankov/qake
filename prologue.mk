@@ -224,6 +224,10 @@ endef
 # It also makes implementation of 'clean' target trivial:
 #   just remove entire directory.
 BUILD_DIR := build
+AUX_DIR := $(BUILD_DIR)/aux
+CMD_DIR := $(AUX_DIR)/
+DU_DIR :=  $(AUX_DIR)/
+RES_DIR := $(BUILD_DIR)/res
 
 # This directory will hold sources.
 # Good build system mirrors sources structure in build directory --
@@ -294,12 +298,12 @@ $(call let,$0,LDLIBS,$6)
 
 $(call TRACE1,OBJ_$(call &,$0,BUILT_NAME) := $(strip \
   $(patsubst $(SRC_DIR)/$(call &,$0,SOURCE_NAME)%,\
-             $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o,\
+             $(RES_DIR)/$(call &,$0,BUILT_NAME)/%.o,\
              $(call &,$0,SRC))))
 
 $(call TRACE1,$(OBJ_$(call &,$0,BUILT_NAME)): \
-  $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/%.o: \
-  $(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update \
+  $(RES_DIR)/$(call &,$0,BUILT_NAME)/%.o: \
+  $(call NORM_PATH,$(DU_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update \
 | $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/% \
   $$(DIRECTORY)
 > $$(COMPILE_OBJECT))
@@ -310,18 +314,20 @@ $(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
 
 $$(eval $$(call DEFINE_HASHED_CHAIN, \
                 OBJ_$$(call &,$0,BUILT_NAME), \
-                %, \
-                %, \
+                $$(call NORM_PATH,./$(RES_DIR)/%), \
+                $$(call NORM_PATH,./$(DU_DIR)/%), \
                 $$(OBJ_$(call &,$0,BUILT_NAME))))
 
 $$(eval $$(call DEFINE_HASHED_CHAIN, \
                 SRC_$$(call &,$0,SOURCE_NAME), \
-                $$(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/%, \
-                $$(call NORM_PATH,$(BUILD_DIR)/$(call &,$0,SOURCE_NAME))/%, \
+                $$(call NORM_PATH,./$(call &,$0,SOURCE_NAME))/%, \
+                $$(call NORM_PATH,$(DU_DIR)/$(call &,$0,SOURCE_NAME))/%, \
                 $$(call &,$0,SRC)))
 
-%.did_update: \
-%.hash.new
+.PRECIOUS: build/aux/%.did_update
+
+$(AUX_DIR)/%.did_update: \
+$(AUX_DIR)/%.hash.new
 >  if [ -f $$(patsubst %.hash.new,\
                        %.hash.old,\
                        $$<) ];\
@@ -339,6 +345,22 @@ $$(eval $$(call DEFINE_HASHED_CHAIN, \
                       %.hash.old,\
                       $$<)
 
+.PRECIOUS: build/aux/%.hash.new
+
+$(AUX_DIR)/%.hash.new: \
+$(RES_DIR)/%
+> echo Hashing $$< to $$@
+> shasum $$< > $$@
+
+$(AUX_DIR)/%.hash.new: \
+$(SRC_DIR)/%
+> echo Hashing $$< to $$@
+> shasum $$< > $$@
+
+$(AUX_DIR)/%.hash.new: \
+$(AUX_DIR)/%
+> echo Hashing $$< to $$@
+> shasum $$< > $$@
 
 $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
   $$(OBJ_$(call &,$0,BUILT_NAME):=.d)))
@@ -379,11 +401,6 @@ HASH_NEW_$$(call &,$0,VAR_NAME_SUFFIX) = $$(strip \
   $$(patsubst $(call &,$0,SOURCE_PATTERN),\
               $(call &,$0,TARGET_PATTERN).hash.new, \
               $(call &,$0,SOURCE_LIST)))
-
-$$(HASH_NEW_$$(call &,$0,VAR_NAME_SUFFIX)):
-  $(call &,$0,TARGET_PATTERN).hash.new: \
-  $(call &,$0,SOURCE_PATTERN)
-> shasum $$< > $$@
 endef
 
 # This is called 'canned recipe'.
@@ -399,8 +416,8 @@ endef
 # https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
 #
 define COMPILE_OBJECT
-$(call RUN,GCC $$(@F),gcc $$(CFLAGS) $$(patsubst $(BUILD_DIR)/%.did_update,$(SRC_DIR)/%,$$<) -o $$@ -c -MD -MF $$@.d -MP); \
-sed -i -e 's|\\b$(patsubst $(BUILD_DIR)/%.did_update,$(SRC_DIR)/%,$<)\b||g' $@.d
+$(call RUN,GCC $$(@F),gcc $$(CFLAGS) $$(patsubst $(AUX_DIR)/%.did_update,$(SRC_DIR)/%,$$<) -o $$@ -c -MD -MF $$@.d -MP); \
+sed -i -e 's|\\b$(patsubst $(AUX_DIR)/%.did_update,$(SRC_DIR)/%,$<)\\b||g' $@.d
 endef
 
 # Another canned recipe - for linking program out of objects.
@@ -410,7 +427,7 @@ endef
 # Just stick with compiler driver, it does the right thing most of the rime.
 # $^ is all prerequisites of the target.
 define LINK_PROGRAM
-$(call RUN,GCC $$(@F),gcc $$(LDFLAGS) $$(patsubst %.did_update,%,$$^) -o $$@ $$(LDLIBS))
+$(call RUN,GCC $$(@F),gcc $$(LDFLAGS) $$(patsubst $(AUX_DIR)/%.did_update,$(RES_DIR)/%,$$^) -o $$@ $$(LDLIBS))
 endef
 
 # 'clean' just removes entire build directory.
