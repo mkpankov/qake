@@ -67,10 +67,10 @@ build/aux/%.cmd.new.hash.new
 
 build/aux/%.hash.new: \
 %
-> echo Hashing from result $< to $@
+> echo Hashing $< to $@
 > shasum $< > $@
 
 build/aux/%.hash.new: \
 build/aux/%
-> echo Hashing auxiliary $< to $@
+> echo Hashing $< to $@
 > shasum $< > $@
