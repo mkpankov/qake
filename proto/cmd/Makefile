@@ -6,12 +6,16 @@ RES = build/res/b
 
 all: $(RES)
 
-build/aux/build/res/a.cmd: $(THIS_MAKEFILE) | $(DIRECTORY)
+build/aux/build/res/a.cmd:
 > echo 'echo A; echo I am a > $(call GET_TARGET_PATH,$@)' > $@
 
-build/aux/build/res/b.cmd: build/aux/build/res/a.did_update $(THIS_MAKEFILE) | $(DIRECTORY)
+build/aux/build/res/b.cmd: build/aux/build/res/a.did_update
 > echo 'echo B; cat $< > $(call GET_TARGET_PATH,$@);
 > echo I am b buzzz >> $(call GET_TARGET_PATH,$@)' > $@
+
+COMMANDS := build/aux/build/res/a.cmd build/aux/build/res/b.cmd
+
+$(COMMANDS): $(THIS_MAKEFILE) | $(DIRECTORY)
 
 build/res/%: \
   build/aux/build/res/%.cmd.did_update \
