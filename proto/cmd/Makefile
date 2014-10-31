@@ -1,15 +1,17 @@
+THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
+
 RES = build/res/b
 
 .SHELLFLAGS = --target $@
 
 all: $(RES)
 
-build/aux/build/res/a.cmd: Makefile | $(DIRECTORY)
+build/aux/build/res/a.cmd: $(THIS_MAKEFILE) | $(DIRECTORY)
 > echo 'echo A; echo I am a > $(call GET_TARGET_PATH,$@)' > $@
 
-build/aux/build/res/b.cmd: build/aux/build/res/a.did_update Makefile | $(DIRECTORY)
+build/aux/build/res/b.cmd: build/aux/build/res/a.did_update $(THIS_MAKEFILE) | $(DIRECTORY)
 > echo 'echo B; cat $< > $(call GET_TARGET_PATH,$@);
-> echo And I am b buzzz >> $(call GET_TARGET_PATH,$@)' > $@
+> echo I am b buzzz >> $(call GET_TARGET_PATH,$@)' > $@
 
 build/res/%: \
   build/aux/build/res/%.cmd.did_update \

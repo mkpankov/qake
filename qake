@@ -9,20 +9,17 @@ parse_arguments() {
                 shift 2
                 ;;
             *)
+                REMAINING_ARGS="$REMAINING_ARGS""$1"
                 shift 1
                 ;;
         esac
     done
 
     [ -z "$MAKEFILE" ] && MAKEFILE=Makefile
-    MAKEFILE_BRK=$MAKEFILE.brk
+    REMAINING_ARGS="$REMAINING_ARGS""$@"
 }
 
-parse_arguments $*
-
-echo 'include $(QAKE_INCLUDE_DIR)/prologue.mk' >  $MAKEFILE_BRK
-echo "include $MAKEFILE"                       >> $MAKEFILE_BRK
-echo 'include $(QAKE_INCLUDE_DIR)/epilogue.mk' >> $MAKEFILE_BRK
+parse_arguments "$@"
 
 if [ -f .make_path ]
 then
@@ -30,6 +27,4 @@ then
 else
     readonly MAKE='/usr/bin/env make'
 fi
-eval $MAKE -f $MAKEFILE_BRK "$@"
-
-rm $MAKEFILE_BRK
+eval $MAKE -f $QAKE_INCLUDE_DIR/prologue.mk -f $MAKEFILE -f $QAKE_INCLUDE_DIR/epilogue.mk "$REMAINING_ARGS"

@@ -43,22 +43,24 @@ case_meaningful_change_build () {
 
 case_command_a_change_build () {
     rm -rf build
-    $QAKE >/dev/null 2>&1
-    git am 0001-Change-commands-for-a.patch
-    $QAKE | sort > log
+    cp Makefile Makefile.tmp
+    QAKE_FILE="$QAKE -f Makefile.tmp"
+    $QAKE_FILE >/dev/null 2>&1
+    sed -i 's|echo I am a|echo I am a aaaa|g' Makefile.tmp
+    $QAKE_FILE | sort > log
     cat command_a_change_build.log | sort > command_a_change_build.log.sorted
     diff -q log command_a_change_build.log.sorted
-    git checkout Makefile
 }
 
 case_command_b_change_build () {
     rm -rf build
-    $QAKE >/dev/null 2>&1
-    git am 0001-Change-commands-for-b.patch
-    $QAKE | sort > log
+    cp Makefile Makefile.tmp
+    QAKE_FILE="$QAKE -f Makefile.tmp"
+    $QAKE_FILE >/dev/null 2>&1
+    sed -i 's|echo I am b|echo I am b bbbb|g' Makefile.tmp
+    $QAKE_FILE | sort > log
     cat command_b_change_build.log | sort > command_b_change_build.log.sorted
     diff -q log command_b_change_build.log.sorted
-    git checkout Makefile
 }
 
 set_up
