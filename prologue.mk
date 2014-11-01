@@ -461,7 +461,7 @@ endef
 # Just stick with compiler driver, it does the right thing most of the rime.
 # $^ is all prerequisites of the target.
 define LINK_PROGRAM
-$(call RUN,GCC $$(notdir $$(call GET_TARGET_PATH,$$@)),gcc $$(LDFLAGS) $$(patsubst $(AUX_DIR)/%.did_update,$(RES_DIR)/%,$$(filter %.o,$$^)) -o $(RES_DIR)/$$(call GET_TARGET_PATH,$$@) $$(LDLIBS))
+$(call RUN,GCC $$(notdir $$(call GET_TARGET_PATH,$$@)),gcc $$(LDFLAGS) $$(filter %.o,$$(patsubst $(AUX_DIR)/%.did_update,$(RES_DIR)/%,$$^)) -o $(RES_DIR)/$$(call GET_TARGET_PATH,$$@) $$(LDLIBS))
 endef
 
 # 'clean' just removes entire build directory.
