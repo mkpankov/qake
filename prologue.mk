@@ -347,14 +347,14 @@ $(OBJ_$(call &,$0,BUILT_NAME)_CMD): .SHELLFLAGS = \
   --build-dir $(BUILD_DIR)
 $$(eval $$(call DEFINE_HASHED_CHAIN, \
                 OBJ_$$(call &,$0,BUILT_NAME), \
-                $$(call NORM_PATH,./$(RES_DIR)/%), \
-                $$(call NORM_PATH,./$(DU_DIR)/%), \
+                $(call NORM_PATH,./$(RES_DIR))/%, \
+                $(call NORM_PATH,./$(DU_DIR)/)/%, \
                 $$(OBJ_$(call &,$0,BUILT_NAME))))
 
 $$(eval $$(call DEFINE_HASHED_CHAIN, \
                 SRC_$$(call &,$0,SOURCE_NAME), \
-                $$(call NORM_PATH,./$(call &,$0,SOURCE_NAME))/%, \
-                $$(call NORM_PATH,$(DU_DIR)/$(call &,$0,SOURCE_NAME))/%, \
+                $(call NORM_PATH,./$(call &,$0,SOURCE_NAME))/%, \
+                $(call NORM_PATH,$(DU_DIR)/$(call &,$0,SOURCE_NAME))/%, \
                 $$(call &,$0,SRC)))
 
 .PRECIOUS: build/aux/%.did_update
