@@ -462,6 +462,11 @@ $$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): \
 | $$(OBJ_$(call &,$0,BUILT_NAME))
 > echo '$$(LINK_PROGRAM)' > $$@
 
+$$(PROGRAM_$(call &,$0,BUILT_NAME)): \
+  $$(DID_UPDATE_OBJ_$(call &,$0,BUILT_NAME)) \
+  $(THIS_MAKEFILE) \
+| $$(OBJ_$(call &,$0,BUILT_NAME))
+
 .PRECIOUS: $$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD)
 
 $$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): LDFLAGS := $(call &,$0,LDFLAGS)
