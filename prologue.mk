@@ -370,18 +370,26 @@ $(call TRACE1,OBJ_$(call &,$0,BUILT_NAME) := $(strip \
              $(RES_DIR)/$(call &,$0,BUILT_NAME)/%.o,\
              $(call &,$0,SRC))))
 
+$$(OBJ_$(call &,$0,BUILT_NAME)): \
+  $(RES_DIR)/$(call &,$0,BUILT_NAME)/%.o: \
+  $(call NORM_PATH,$(DU_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update \
+  $(THIS_MAKEFILE) \
+| $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/% \
+  $$(DIRECTORY)
+
 $(OBJ_$(call &,$0,BUILT_NAME)_CMD): .SHELLFLAGS = \
   --target $$@ --prerequisites $$? -- \
   --build-dir $(BUILD_DIR)
 
-
-$(OBJ_$(call &,$0,BUILT_NAME)_CMD): \
+$$(OBJ_$(call &,$0,BUILT_NAME)_CMD): \
   $(AUX_DIR)/$(call &,$0,BUILT_NAME)/%.o.cmd: \
   $(call NORM_PATH,$(DU_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update \
   $(THIS_MAKEFILE) \
 | $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/% \
   $$(DIRECTORY)
 > echo '$$(COMPILE_OBJECT)' > $$@
+
+.PRECIOUS: $$(OBJ_$(call &,$0,BUILT_NAME)_CMD)
 
 $(OBJ_$(call &,$0,BUILT_NAME)_CMD): CFLAGS := $(call &,$0,CFLAGS)
 $(OBJ_$(call &,$0,BUILT_NAME)_CMD): .SHELLFLAGS = \
@@ -453,6 +461,8 @@ $$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): \
   $(THIS_MAKEFILE) \
 | $$(OBJ_$(call &,$0,BUILT_NAME))
 > echo '$$(LINK_PROGRAM)' > $$@
+
+.PRECIOUS: $$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD)
 
 $$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): LDFLAGS := $(call &,$0,LDFLAGS)
 $$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): LDLIBS := $(call &,$0,LDLIBS)
