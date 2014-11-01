@@ -267,6 +267,10 @@ endef
 
 
 # Function: Define build of a program.
+#
+# TODO: Update this documentation.
+#   It currently doesn't describe command tracking and dependencies hashing.
+#
 # Suppose we're calling this function as follows:
 # $(call PROGRAM,a,b,c.c,d,e,f)
 # (such flags make no sense, but we don't care, it's an example)
@@ -418,6 +422,8 @@ $$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): .SHELLFLAGS = \
 ALL += $$(PROGRAM_$(call &,$0,BUILT_NAME))
 endef
 
+# Funcion: define variables containing file paths
+#   of 'did update' markers and hashes.
 define DEFINE_HASHED_CHAIN
 $(strip \
 $(call FUNCTION_DEBUG_HEADER,$0)

@@ -1,3 +1,5 @@
+# This is needed to setup dependencies on the
+#   Make file for proper command tracking and updating.
 THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 
 # Get list of C sources in 'src' directory.
