@@ -62,11 +62,6 @@ then
     mkdir -p $(dirname $CMD_FILE)
     echo "$CMD" > $CMD_FILE
 fi
-if [ ! -z $TARGET ] && [ ! -d $(dirname $TARGET) ]
-then
-    echo MKDIR $(dirname $TARGET)
-    mkdir -p $(dirname $TARGET)
-fi
 
 info Resulting CMD: "$CMD"
 

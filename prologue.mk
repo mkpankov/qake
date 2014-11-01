@@ -218,6 +218,45 @@ $(call PRINT1,$1)
 $(eval $1)
 endef
 
+# Directory creation:
+# Use secondary expansion to get name of directory of target.
+# We insert additional dollar sign to prevent expansion of $(@D) automatic variable.
+# $(@D) contains directory part of the path to the target file.
+# But it's so only when execution is inside of recipe part
+#   of target.
+# That is, automatic variables like $@, $(@D) and so on, are target-local.
+# More on this:
+# https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
+define DIRECTORY
+$$(@D)/.directory.marker
+endef
+
+# Implicit rule for all marker files.
+# % is called a stem of pattern rule.
+# It matches the part of file path of target.
+# I.e. if target is a/b/c/.directory.marker,
+#   % will match a/b/c/.
+# We can't write a rule for directories themselves,
+# since Make only matches targets by file paths,
+# and path to directory looks just like path to any file.
+# I.e., we would have to change first line to
+# %:
+# which obviously wouldn't work, since it would match any file.
+# In case you think about rule matching on last slash and trying
+#   to create directories themselves: don't.
+# Slashes processing rules are no less obscure than space processing rules,
+#   and there is a known bug during moving from Make 3.81 to Make 3.82
+#   due to changes in processing of paths with double slashes.
+%/.directory.marker:
+> $(call RUN,MKDIR $(@D),mkdir -p $(@D))
+> touch $@
+
+# This part sets target-specific shell flags.
+# These are processed by relay.sh.
+# TODO: Not all of them are actually required by now.
+%/.directory.marker: .SHELLFLAGS = \
+  --target $@ --command-file $@.cmd --prerequisites $? --
+
 # We're going to put all the built stuff under 'build' directory.
 # It allows to write easier .gitignore file and not accidentally commit
 #   built files to version control.
@@ -225,7 +264,6 @@ endef
 #   just remove entire directory.
 BUILD_DIR := build
 AUX_DIR := $(BUILD_DIR)/aux
-CMD_DIR := $(AUX_DIR)/
 DU_DIR :=  $(AUX_DIR)/
 RES_DIR := $(BUILD_DIR)/res
 
@@ -319,7 +357,7 @@ $(call let,$0,LDLIBS,$6)
 $(RES_DIR)/%: \
   $(AUX_DIR)/%.cmd.did_update \
 | $(AUX_DIR)/%.cmd \
-  $(DIRECTORY)
+  $$(DIRECTORY)
 > eval $$$$(cat $$(firstword $$|))
 
 $(call TRACE1,OBJ_$(call &,$0,BUILT_NAME)_CMD := $(strip \
@@ -385,15 +423,18 @@ $(AUX_DIR)/%.hash.new
 .PRECIOUS: build/aux/%.hash.new
 
 $(AUX_DIR)/%.hash.new: \
-$(RES_DIR)/%
+  $(RES_DIR)/% \
+| $$(DIRECTORY)
 > shasum $$< > $$@
 
 $(AUX_DIR)/%.hash.new: \
-$(SRC_DIR)/%
+  $(SRC_DIR)/% \
+| $$(DIRECTORY)
 > shasum $$< > $$@
 
 $(AUX_DIR)/%.hash.new: \
-$(AUX_DIR)/%
+  $(AUX_DIR)/% \
+| $$(DIRECTORY)
 > shasum $$< > $$@
 
 $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
