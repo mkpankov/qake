@@ -1,12 +1,19 @@
-info() {
-    if [ -n "$RELAY_DEBUG" ]
+verbose() {
+    if [ -n "$RELAY_VERBOSE" ]
     then
         echo "$@" >&2
     fi
 }
 
-info
-info
+info() {
+    if [ -n "$RELAY_INFO" ]
+    then
+        echo "$@" >&2
+    fi
+}
+
+verbose
+verbose
 
 while [ $# -gt 0 ]
 do
@@ -48,12 +55,16 @@ do
             ;;
     esac
 done
-info Making "$TARGET" with command "$@", with updated prereqs "$PREREQS",\
+
+info "$@"
+
+verbose Making "$TARGET" with command "$@", with updated prereqs "$PREREQS",\
  putting command into "$CMD_FILE", build dir is "$BUILD_DIR"
+
 
 if [ "$PHONY" = "True" ]
 then
-    info We\'re building phony target
+    verbose We\'re building phony target
 fi
 
 CMD="$@"
@@ -63,7 +74,7 @@ then
     echo "$CMD" > $CMD_FILE
 fi
 
-info Resulting CMD: "$CMD"
+verbose Resulting CMD: "$CMD"
 
 set -e
 eval "$CMD" $REDIRECT
