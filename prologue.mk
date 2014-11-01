@@ -252,6 +252,20 @@ echo $(call &,$0,DESCRIPTION); if ! $(call &,$0,COMMAND);\
   then echo "$$(tput setaf 1)[ERROR]$$(tput sgr0) Failed command:\n$(call &,$0,COMMAND)"; fi
 endef
 
+
+define GET_TARGET_PATH
+$(patsubst build/aux/%.cmd,%,$1)
+endef
+
+define GET_CMD_PATH
+$(patsubst %,build/aux/%.cmd,$1)
+endef
+
+define GET_CMD_DID_UPDATE
+$(patsubst %,build/aux/%.cmd.did_update,$1)
+endef
+
+
 # Function: Define build of a program.
 # Suppose we're calling this function as follows:
 # $(call PROGRAM,a,b,c.c,d,e,f)
@@ -296,22 +310,41 @@ $(call let,$0,CFLAGS,$4)
 $(call let,$0,LDFLAGS,$5)
 $(call let,$0,LDLIBS,$6)
 
+.SHELLFLAGS = --target $$@
+
+$(RES_DIR)/%: \
+  $(AUX_DIR)/%.cmd.did_update \
+| $(AUX_DIR)/%.cmd \
+  $(DIRECTORY)
+> eval $$$$(cat $$(firstword $$|))
+
+$(call TRACE1,OBJ_$(call &,$0,BUILT_NAME)_CMD := $(strip \
+  $(patsubst $(SRC_DIR)/$(call &,$0,SOURCE_NAME)%,\
+             $(AUX_DIR)/$(call &,$0,BUILT_NAME)/%.o.cmd,\
+             $(call &,$0,SRC))))
+
 $(call TRACE1,OBJ_$(call &,$0,BUILT_NAME) := $(strip \
   $(patsubst $(SRC_DIR)/$(call &,$0,SOURCE_NAME)%,\
              $(RES_DIR)/$(call &,$0,BUILT_NAME)/%.o,\
              $(call &,$0,SRC))))
 
-$(call TRACE1,$(OBJ_$(call &,$0,BUILT_NAME)): \
-  $(RES_DIR)/$(call &,$0,BUILT_NAME)/%.o: \
-  $(call NORM_PATH,$(DU_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update \
-| $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/% \
-  $$(DIRECTORY)
-> $$(COMPILE_OBJECT))
-$(OBJ_$(call &,$0,BUILT_NAME)): CFLAGS := $(call &,$0,CFLAGS)
-$(OBJ_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
-  --target $$@ --command-file $$@.cmd --prerequisites $$? -- \
+$(OBJ_$(call &,$0,BUILT_NAME)_CMD): .SHELLFLAGS = \
+  --target $$@ --prerequisites $$? -- \
   --build-dir $(BUILD_DIR)
 
+
+$(OBJ_$(call &,$0,BUILT_NAME)_CMD): \
+  $(AUX_DIR)/$(call &,$0,BUILT_NAME)/%.o.cmd: \
+  $(call NORM_PATH,$(DU_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update \
+  $(THIS_MAKEFILE) \
+| $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/% \
+  $$(DIRECTORY)
+> echo '$$(COMPILE_OBJECT)' > $$@
+
+$(OBJ_$(call &,$0,BUILT_NAME)_CMD): CFLAGS := $(call &,$0,CFLAGS)
+$(OBJ_$(call &,$0,BUILT_NAME)_CMD): .SHELLFLAGS = \
+  --target $$@ --prerequisites $$? -- \
+  --build-dir $(BUILD_DIR)
 $$(eval $$(call DEFINE_HASHED_CHAIN, \
                 OBJ_$$(call &,$0,BUILT_NAME), \
                 $$(call NORM_PATH,./$(RES_DIR)/%), \
@@ -349,17 +382,14 @@ $(AUX_DIR)/%.hash.new
 
 $(AUX_DIR)/%.hash.new: \
 $(RES_DIR)/%
-> echo Hashing $$< to $$@
 > shasum $$< > $$@
 
 $(AUX_DIR)/%.hash.new: \
 $(SRC_DIR)/%
-> echo Hashing $$< to $$@
 > shasum $$< > $$@
 
 $(AUX_DIR)/%.hash.new: \
 $(AUX_DIR)/%
-> echo Hashing $$< to $$@
 > shasum $$< > $$@
 
 $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
@@ -367,18 +397,22 @@ $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
 
 -include $$(DEP_$(call &,$0,BUILT_NAME))
 
+$(call TRACE1,PROGRAM_$(call &,$0,BUILT_NAME)_CMD := $(strip \
+  $(AUX_DIR)/$(call &,$0,BUILT_NAME)/$(call &,$0,BUILT_NAME)).cmd)
+
 $(call TRACE1,PROGRAM_$(call &,$0,BUILT_NAME) := $(strip \
-  $(BUILD_DIR)/$(call &,$0,BUILT_NAME)/$(call &,$0,BUILT_NAME)))
+  $(RES_DIR)/$(call &,$0,BUILT_NAME)/$(call &,$0,BUILT_NAME)))
 
-$$(PROGRAM_$(call &,$0,BUILT_NAME)): \
+$$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): \
   $$(DID_UPDATE_OBJ_$(call &,$0,BUILT_NAME)) \
+  $(THIS_MAKEFILE) \
 | $$(OBJ_$(call &,$0,BUILT_NAME))
-> $$(LINK_PROGRAM)
+> echo '$$(LINK_PROGRAM)' > $$@
 
-$$(PROGRAM_$(call &,$0,BUILT_NAME)): LDFLAGS := $(call &,$0,LDFLAGS)
-$$(PROGRAM_$(call &,$0,BUILT_NAME)): LDLIBS := $(call &,$0,LDLIBS)
-$$(PROGRAM_$(call &,$0,BUILT_NAME)): .SHELLFLAGS = \
-  --target $$@ --command-file $$@.cmd --prerequisites $$? -- \
+$$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): LDFLAGS := $(call &,$0,LDFLAGS)
+$$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): LDLIBS := $(call &,$0,LDLIBS)
+$$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): .SHELLFLAGS = \
+  --target $$@ --prerequisites $$? -- \
   --build-dir $(BUILD_DIR)
 
 ALL += $$(PROGRAM_$(call &,$0,BUILT_NAME))
@@ -416,8 +450,8 @@ endef
 # https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html
 #
 define COMPILE_OBJECT
-$(call RUN,GCC $$(@F),gcc $$(CFLAGS) $$(patsubst $(AUX_DIR)/%.did_update,$(SRC_DIR)/%,$$<) -o $$@ -c -MD -MF $$@.d -MP); \
-sed -i -e 's|\\b$(patsubst $(AUX_DIR)/%.did_update,$(SRC_DIR)/%,$<)\\b||g' $@.d
+$(call RUN,GCC $$(notdir $$(call GET_TARGET_PATH,$$@)),gcc $$(CFLAGS) $$(patsubst $(AUX_DIR)/%.did_update,$(SRC_DIR)/%,$$<) -o $(RES_DIR)/$$(call GET_TARGET_PATH,$$@) -c -MD -MF $(AUX_DIR)/$$(call GET_TARGET_PATH,$$@).d -MP); \
+sed -i -e "s|\\b$(patsubst $(AUX_DIR)/%.did_update,$(SRC_DIR)/%,$<)\\b||g" $(AUX_DIR)/$(call GET_TARGET_PATH,$@).d
 endef
 
 # Another canned recipe - for linking program out of objects.
@@ -427,7 +461,7 @@ endef
 # Just stick with compiler driver, it does the right thing most of the rime.
 # $^ is all prerequisites of the target.
 define LINK_PROGRAM
-$(call RUN,GCC $$(@F),gcc $$(LDFLAGS) $$(patsubst $(AUX_DIR)/%.did_update,$(RES_DIR)/%,$$^) -o $$@ $$(LDLIBS))
+$(call RUN,GCC $$(notdir $$(call GET_TARGET_PATH,$$@)),gcc $$(LDFLAGS) $$(patsubst $(AUX_DIR)/%.did_update,$(RES_DIR)/%,$$(filter %.o,$$^)) -o $(RES_DIR)/$$(call GET_TARGET_PATH,$$@) $$(LDLIBS))
 endef
 
 # 'clean' just removes entire build directory.

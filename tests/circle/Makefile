@@ -1,3 +1,5 @@
+THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
+
 # Get list of C sources in 'src' directory.
 # More on how $(wildcard) works:
 # https://www.gnu.org/software/make/manual/html_node/Wildcard-Function.html#Wildcard-Function

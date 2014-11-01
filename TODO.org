@@ -19,7 +19,7 @@
 *** Test the touch of file contents
 ** DONE Fix the "overloading rule" problem due to usage of '-f'
    CLOSED: [2014-10-31 Пт. 16:54]
-** Move the results to res, auxiliary to aux in main
+** TODO Move the results to res, auxiliary to aux in main
 ** Port prototype to main PROGRAM macro
 * Write the tutorial
 * Write the README
