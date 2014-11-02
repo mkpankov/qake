@@ -450,7 +450,7 @@ $(AUX_DIR)/%.hash.new: \
 > md5sum $$< > $$@
 
 $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
-  $$(OBJ_$(call &,$0,BUILT_NAME):=.d)))
+  $$(patsubst $(call NORM_PATH,$(RES_DIR)/$(BUILT_NAME))/%,$(call NORM_PATH,$(AUX_DIR)/$(BUILT_NAME))/%.d,$$(OBJ_$(call &,$0,BUILT_NAME)))))
 
 -include $$(DEP_$(call &,$0,BUILT_NAME))
 
