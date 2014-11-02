@@ -1,2 +1,1 @@
-MKDIR build/aux
 GCC irc.c.o

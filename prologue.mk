@@ -251,6 +251,11 @@ endef
 > $(call RUN,MKDIR $(@D),mkdir -p $(@D))
 > touch $@
 
+# Directory markers are precious:
+#   don't remove them if they were created by chains
+#   of implicit rules.
+.PRECIOUS: %/.directory.marker
+
 # This part sets target-specific shell flags.
 # These are processed by relay.sh.
 # TODO: Not all of them are actually required by now.
