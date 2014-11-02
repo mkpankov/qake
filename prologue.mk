@@ -373,7 +373,6 @@ $(call TRACE1,OBJ_$(call &,$0,BUILT_NAME) := $(strip \
 $$(OBJ_$(call &,$0,BUILT_NAME)): \
   $(RES_DIR)/$(call &,$0,BUILT_NAME)/%.o: \
   $(call NORM_PATH,$(DU_DIR)/$(call &,$0,SOURCE_NAME))/%.did_update \
-  $(THIS_MAKEFILE) \
 | $(call NORM_PATH,$(SRC_DIR)/$(call &,$0,SOURCE_NAME))/% \
   $$(DIRECTORY)
 
@@ -464,7 +463,6 @@ $$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD): \
 
 $$(PROGRAM_$(call &,$0,BUILT_NAME)): \
   $$(DID_UPDATE_OBJ_$(call &,$0,BUILT_NAME)) \
-  $(THIS_MAKEFILE) \
 | $$(OBJ_$(call &,$0,BUILT_NAME))
 
 .PRECIOUS: $$(PROGRAM_$(call &,$0,BUILT_NAME)_CMD)

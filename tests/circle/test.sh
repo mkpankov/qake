@@ -45,8 +45,21 @@ case_meaningful_change_build () {
     git checkout src/irc.c
 }
 
+case_command_change_build () {
+    rm -rf build
+    cp Makefile Makefile.tmp
+    QAKE_FILE="$QAKE -f Makefile.tmp"
+    $QAKE_FILE >/dev/null 2>&1
+    sed -i 's|  -rdynamic \\||g' Makefile.tmp
+    $QAKE_FILE | sort > log
+    cat command_change_build.log | sort > command_change_build.log.sorted
+    diff -q log command_change_build.log.sorted
+}
+
+
 set_up
 case_full_build
 case_null_build
 case_meaningless_change_build
 case_meaningful_change_build
+case_command_change_build
