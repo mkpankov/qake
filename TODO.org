@@ -23,6 +23,12 @@
    CLOSED: [2014-11-01 Сб. 21:36]
 ** DONE Port prototype to main PROGRAM macro
    CLOSED: [2014-11-01 Сб. 21:36]
+* Fix the passing of multiple command line switches to qake
+* DONE Fix tracking of headers
+  CLOSED: [2014-11-03 Пн. 02:00]
 * Document latest code
-* Write the tutorial
-* Write the README
+* DONE Write the tutorial
+  CLOSED: [2014-11-03 Пн. 02:38]
+* DONE Write the README
+  CLOSED: [2014-11-03 Пн. 02:38]
+* Rename 'Makefile' to 'Qakefile'
