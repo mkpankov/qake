@@ -437,17 +437,17 @@ $(AUX_DIR)/%.hash.new
 $(AUX_DIR)/%.hash.new: \
   $(RES_DIR)/% \
 | $$(DIRECTORY)
-> shasum $$< > $$@
+> md5sum $$< > $$@
 
 $(AUX_DIR)/%.hash.new: \
   $(SRC_DIR)/% \
 | $$(DIRECTORY)
-> shasum $$< > $$@
+> md5sum $$< > $$@
 
 $(AUX_DIR)/%.hash.new: \
   $(AUX_DIR)/% \
 | $$(DIRECTORY)
-> shasum $$< > $$@
+> md5sum $$< > $$@
 
 $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
   $$(OBJ_$(call &,$0,BUILT_NAME):=.d)))
