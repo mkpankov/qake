@@ -6,6 +6,12 @@ GNU Make based build system with a different approach.
 
 GNU Make is an old dependency tracking program. Over the years, it gained a lot of features that are hard to use in a maintainable way. Such as, [built-in implicit rules](https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html). It also improved in several areas, but these improvements are still optional to be compatible with older Makefiles.
 
+For example:
+* GNU Make 4.0 has option to sync output of multiple parallel jobs (-O);
+* It also has option to disable built-in implicit recipes and variables (-r and -R);
+* One can now use custom recipe prefix instead of TAB character, making for more explicit Makefiles;
+* --trace enables tracing of full targets (with prerequisites that caused the target to update).
+
 Let's *break* backwards compatibility. Let's squeeze every drop of goodness GNU Make has to offer. Let's make a build system that is easier to use and is more featureful.
 
 ## Goal
