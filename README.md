@@ -10,7 +10,7 @@ Let's *break* backwards compatibility. Let's squeeze every drop of goodness GNU 
 
 ## Goal
 
-The user is supposed to be never needing to call `clean` goal. The single entry point is `qake`, and it should bring the project to the most-recent state without doing anything unnecessary.
+The user is supposed to never need to call `clean` goal. The single entry point is `qake`, and it should bring the project to the most-recent state without doing anything unnecessary.
 
 ## Features
 
