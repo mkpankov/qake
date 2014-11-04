@@ -28,6 +28,12 @@ The user is supposed to never need to call `clean` goal. The single entry point 
 * Tracks header dependencies (of course) - when user changes a common header, they don't need to remember to `clean` or do anything unusual. They just type `qake`, and whatever needs update gets updated;
 * Uses GNU Make 4.0 internally and exposes it when needed - you can still pass custom flags to Make itself for debugging or any other purpose.
 
+## Disclaimer
+
+The project is in prototype stage and may or may not have significant limitations, including those making it unusable for a particular application.
+
+For one, current implementation of object and source files tracking uses full hashing of corresponding file, what decreases the performance significantly.
+
 ## Tour (and a tutorial)
 
 ### Define program build
