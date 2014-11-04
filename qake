@@ -21,9 +21,9 @@ parse_arguments() {
 
 parse_arguments "$@"
 
-if [ -f .make_path ]
+if [ -f $QAKE_INCLUDE_DIR/.make_path ]
 then
-    readonly MAKE=$(cat .make_path)
+    readonly MAKE=$(cat $QAKE_INCLUDE_DIR/.make_path)
 else
     readonly MAKE='/usr/bin/env make'
 fi
