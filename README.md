@@ -2,6 +2,22 @@
 
 GNU Make based build system with a different approach.
 
+## Table of Contents
+
+- [Why?](#why)
+- [Goal](#goal)
+- [Features](#features)
+- [Disclaimer](#disclaimer)
+- [Tour (and a tutorial)](#tour-and-a-tutorial)
+    - [Define program build](#define-program-build)
+    - [The full build](#the-full-build)
+    - [Header files tracking](#header-files-tracking)
+    - [Build command tracking](#build-command-tracking)
+    - [Pruning of meaningless changes](#pruning-of-meaningless-changes)
+- [Installation](#installation)
+    - [Automatic](#automatic)
+        - [Via Wget](#via-wget)
+
 ## Why?
 
 GNU Make is an old dependency tracking program. Over the years, it gained a lot of features that are hard to use in a maintainable way. Such as, [built-in implicit rules](https://www.gnu.org/software/make/manual/html_node/Catalogue-of-Rules.html). It also improved in several areas, but these improvements are still optional to be compatible with older Makefiles.
