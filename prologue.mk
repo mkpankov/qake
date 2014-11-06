@@ -1,3 +1,11 @@
+ifeq (, $(shell which md5sum))
+  # BSD derived systems (OS X, FreeBSD, etc.) use md5 instead of md5sum that 
+  # is available on Linux
+  HASH := md5
+else
+  HASH := md5sum
+endif
+  
 # This is to precisely track what's going on.
 # It's used by Make as command interpreter.
 # By default, Make uses /bin/sh as interpreter for recipes.
@@ -437,17 +445,17 @@ $(AUX_DIR)/%.hash.new
 $(AUX_DIR)/%.hash.new: \
   $(RES_DIR)/% \
 | $$(DIRECTORY)
-> md5sum $$< > $$@
+> $(HASH) $$< > $$@
 
 $(AUX_DIR)/%.hash.new: \
   $(SRC_DIR)/% \
 | $$(DIRECTORY)
-> md5sum $$< > $$@
+> $(HASH) $$< > $$@
 
 $(AUX_DIR)/%.hash.new: \
   $(AUX_DIR)/% \
 | $$(DIRECTORY)
-> md5sum $$< > $$@
+> $(HASH) $$< > $$@
 
 $(call TRACE1,DEP_$(call &,$0,BUILT_NAME) := $(strip \
   $$(patsubst $(call NORM_PATH,$(RES_DIR)/$(BUILT_NAME))/%,$(call NORM_PATH,$(AUX_DIR)/$(BUILT_NAME))/%.d,$$(OBJ_$(call &,$0,BUILT_NAME)))))

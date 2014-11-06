@@ -95,7 +95,8 @@ maybe_install_make() {
         info "Downloading Make 4.0 to $QAKE_INSTALL_DIR/$MAKE_FILENAME"
         wget http://ftp.gnu.org/gnu/make/$MAKE_FILENAME \
             -O $QAKE_INSTALL_DIR/$MAKE_FILENAME
-        tar -C $QAKE_INSTALL_DIR -xaf $MAKE_FILENAME
+        cd $QAKE_INSTALLDIR
+        tar -xf $QAKE_INSTALL_DIR/$MAKE_FILENAME
         cd make-4.0
         info "Configuring Make 4.0"
         try ./configure --prefix="$QAKE_MAKE_INSTALL_DIR" > /dev/null
@@ -103,8 +104,7 @@ maybe_install_make() {
         try make -j > /dev/null
         info "Installing Make 4.0 to $QAKE_MAKE_INSTALL_DIR"
         try make install -j > /dev/null
-        cd - > /dev/null
-        echo "$MAKE" > .make_path
+        echo "$MAKE" > $QAKE_INSTALL_DIR/.make_path
     fi
 }
 
