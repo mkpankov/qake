@@ -46,7 +46,7 @@ parse_arguments() {
 
     [ -z "$DO_CLONE" ] && DO_CLONE=true
     [ -z "$INSTALL_ENV" ] && INSTALL_ENV=true
-    [ -z "$QAKE_URL" ] && QAKE_URL="git@github.com:constantius9/qake.git"
+    [ -z "$QAKE_URL" ] && QAKE_URL="git@github.com:mkpankov/qake.git"
     [ -z "$QAKE_INSTALL_DIR" ] && QAKE_INSTALL_DIR="$HOME/qake/"
     [ -z "$USE_COLORS" ] && USE_COLORS=true
     [ -z "$INSTALL_MAKE" ] && INSTALL_MAKE=true
