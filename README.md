@@ -38,9 +38,11 @@ The user is supposed to never need to call `clean` goal. The single entry point 
 
 * Compact syntax for definition of entire program build;
 * Prevents lengthy meaningless rebuilds - prunes it as early as possible. Changing the Git branch doesn't cause the full rebuild anymore!;
+* Fully parallel. Gets to up-to-date state as quickly as possible. But nothing is done several times; everything is properly included in dependency graph. Even directory creation (see below);
 * Tracks build commands - changes of build system itself are taken into account;
 * Terse, but useful, output - we value users' attention and think it's easier to spot anything unusual when the build system doesn't spit at terminal every command it runs. At the same time, errors are colorized to be easy to notice and provide the full used command when user needs it the most;
 * Extensible to other types of built entities. Supporting builds of static and dynamic libraries with dependencies between them is possible, as well as adding ways to build some custom artifacts;
+* Creates needed directories automatically. Just add `| $(DIRECTORY)` to prerequisites. This is something you'll notice when adding support of other built artifacts;
 * Tracks header dependencies (of course) - when user changes a common header, they don't need to remember to `clean` or do anything unusual. They just type `qake`, and whatever needs update gets updated;
 * Uses GNU Make 4.0 internally and exposes it when needed - you can still pass custom flags to Make itself for debugging or any other purpose.
 
